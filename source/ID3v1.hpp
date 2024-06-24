@@ -17,7 +17,7 @@ union ID3v1{
         /*
 		 * @brief: Default virtual destructor that deallocate 'v10' and 'v11'.
 		 */
-        virtual ~ID3v1();
+        ~ID3v1();
 
         /*
 		 * @brief: Check if is the version 1.0.

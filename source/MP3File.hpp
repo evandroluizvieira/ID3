@@ -1,7 +1,6 @@
 #ifndef EMP3FILE_HPP
 #define EMP3FILE_HPP
 
-//Local
 #include "File.hpp"
 #include "ID3.hpp"
 

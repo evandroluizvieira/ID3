@@ -3,7 +3,7 @@
 #include <fstream>
 
 File::File() :
-	data(nullptr), size(nullptr){
+	data(nullptr), size(0){
 
 }
 

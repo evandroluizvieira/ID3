@@ -1,8 +1,8 @@
-//Local
 #include "ID3v1.hpp"
 
-ID3v1::ID3v1() :
-    v10(nullptr), v11(nullptr){
+ID3v1::ID3v1(){
+    v10 = nullptr;
+    v11 = nullptr;
 
 }
 
