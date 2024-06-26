@@ -52,13 +52,12 @@ class MP3File : public File{
 
 		/*
 		 * @brief: Get ID3 Tags if exists.
-		 * @return: Copy of ID3 tag version 1 and or version 2.
+		 * @return: Copy of ID3 tag version 1 and/or version 2.
 		 */
 		ID3 getID3() const;
 
 		/*
-		 * @brief: Check if loaded 'data' contains ID3 tag version 1.0.
-		 * @return: 'true' in success and 'false' otherwise.
+		 * @brief: Setthe given 'id3' to the file.
 		 */
 		void setID3(const ID3& id3);
 

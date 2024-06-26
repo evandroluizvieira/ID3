@@ -110,9 +110,6 @@ class ID3v10{
         };
 
     public:
-        static std::string GetGenreAsString(ID3v10::Genre genre);
-
-    public:
         /*
 		 * @brief: Default constructor.
 		 */

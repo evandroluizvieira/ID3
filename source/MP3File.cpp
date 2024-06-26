@@ -1,5 +1,8 @@
 #include "ID3v10.hpp"
 #include "ID3v11.hpp"
+#include "ID3v22.hpp"
+#include "ID3v23.hpp"
+#include "ID3v24.hpp"
 #include "MP3File.hpp"
 
 #include <cstring>
@@ -99,6 +102,14 @@ ID3 MP3File::getID3() const{
 			memcpy(&v10->data, &data[size - sizeOfID3v10Data], sizeOfID3v10Data);
 			id3.v1->v10 = v10;
 		}
+
+		if(hasID3v24() == true){
+			//TODO copy id3 v24 from file 'data' to 'id3' v24
+		}else if(hasID3v23() == true){
+			//TODO copy id3 v23 from file 'data' to 'id3' v23
+		}else if(hasID3v22() == true){
+			//TODO copy id3 v22 from file 'data' to 'id3' v22
+		}
 	}
 
 	return id3;
@@ -149,6 +160,30 @@ void MP3File::setID3(const ID3& id3){
 
 			data = newData;
 			size = newSize;
+		}
+	}
+
+	ID3v22* id3v22 = id3.v2->v22;
+	ID3v23* id3v23 = id3.v2->v23;
+	ID3v24* id3v24 = id3.v2->v24;
+
+	if(id3v24 != nullptr){
+		//TODO set ID3 v24 tag to 'data'
+	}else if(id3v23 != nullptr){
+		//TODO set ID3 v23 tag to 'data'
+	}else if(id3v22 != nullptr){
+		//TODO set ID3 v22 tag to 'data'
+	}else{
+		if(hasID3v22() == true){
+			//TODO remove ID3 v22 from 'data'
+		}
+
+		if(hasID3v23() == true){
+			//TODO remove ID3 v23 from 'data'
+		}
+
+		if(hasID3v24() == true){
+			//TODO remove ID3 v24 from 'data'
 		}
 	}
 }

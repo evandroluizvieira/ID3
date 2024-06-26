@@ -8,6 +8,8 @@
  * @brief: ID3 tag version 1, this can't have 'v10' and 'v11' simultaneously in file, only one by time.
  */
 union ID3v1{
+	friend class MP3File;
+
     public:
 		/*
 		 * @brief: Default constructor.
