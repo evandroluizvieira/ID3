@@ -51,12 +51,24 @@ bool MP3File::hasID3v11() const{
 	return false;
 }
 
+bool MP3File::hasID3v20() const{
+	if(isEmpty() == true){
+		return false;
+	}
+
+	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 2 && data[4] == 0){
+		return true;
+	}else{
+		return false;
+	}
+}
+
 bool MP3File::hasID3v22() const{
 	if(isEmpty() == true){
 		return false;
 	}
 
-	if(size >= 4 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 2){
+	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 2 && data[4] == 2){
 		return true;
 	}else{
 		return false;
@@ -68,7 +80,7 @@ bool MP3File::hasID3v23() const{
 		return false;
 	}
 
-	if(size >= 4 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 3){
+	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 2 && data[4] == 3){
 		return true;
 	}else{
 		return false;
@@ -80,7 +92,7 @@ bool MP3File::hasID3v24() const{
 		return false;
 	}
 
-	if(size >= 4 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 4){
+	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 2 && data[4] == 4){
 		return true;
 	}else{
 		return false;
@@ -109,6 +121,8 @@ ID3 MP3File::getID3() const{
 			//TODO copy id3 v23 from file 'data' to 'id3' v23
 		}else if(hasID3v22() == true){
 			//TODO copy id3 v22 from file 'data' to 'id3' v22
+		}else if(hasID3v20() == true){
+			//TODO copy id3 v22 from file 'data' to 'id3' v20
 		}
 	}
 
@@ -163,6 +177,7 @@ void MP3File::setID3(const ID3& id3){
 		}
 	}
 
+	ID3v22* id3v20 = id3.v2->v20;
 	ID3v22* id3v22 = id3.v2->v22;
 	ID3v23* id3v23 = id3.v2->v23;
 	ID3v24* id3v24 = id3.v2->v24;
@@ -173,7 +188,13 @@ void MP3File::setID3(const ID3& id3){
 		//TODO set ID3 v23 tag to 'data'
 	}else if(id3v22 != nullptr){
 		//TODO set ID3 v22 tag to 'data'
+	}else if(id3v20 != nullptr){
+		//TODO set ID3 v20 tag to 'data'
 	}else{
+		if(hasID3v20() == true){
+			//TODO remove ID3 v20 from 'data'
+		}
+
 		if(hasID3v22() == true){
 			//TODO remove ID3 v22 from 'data'
 		}

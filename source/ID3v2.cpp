@@ -1,6 +1,7 @@
 #include "ID3v2.hpp"
 
 ID3v2::ID3v2(){
+	v20 = nullptr;
     v22 = nullptr;
     v23 = nullptr;
     v24 = nullptr;
@@ -8,6 +9,10 @@ ID3v2::ID3v2(){
 
 ID3v2::~ID3v2(){
     remove();
+}
+
+bool ID3v2::isV20() const{
+    return v20 != nullptr;
 }
 
 bool ID3v2::isV22() const{
@@ -23,6 +28,11 @@ bool ID3v2::isV24() const{
 }
 
 void ID3v2::remove(){
+	if(v20 != nullptr){
+		delete v20;
+		v20 = nullptr;
+	}
+
     if(v22 != nullptr){
         delete v22;
         v22 = nullptr;

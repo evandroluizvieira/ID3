@@ -32,6 +32,12 @@ class MP3File : public File{
 		 */
 		bool hasID3v11() const;
 
+
+		/*
+		 * @brief: Check if loaded 'data' contains ID3 tag version 2.0.
+		 * @return: 'true' in success and 'false' otherwise.
+		 */
+		bool hasID3v20() const;
 		/*
 		 * @brief: Check if loaded 'data' contains ID3 tag version 2.2.
 		 * @return: 'true' in success and 'false' otherwise.
