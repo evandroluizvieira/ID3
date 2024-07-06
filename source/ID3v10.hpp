@@ -1,194 +1,275 @@
 #ifndef ID3V10_HPP
 #define ID3V10_HPP
 
+/**
+ * @file ID3v10.hpp
+ *
+ * @author Evandro L. Vieira
+ *
+ * @date 06/07/2024
+ *
+ * @version 1.0
+ *
+ * @brief This file contains the definition of the class ID3v10 and struct ID3v10Data.
+ */
+
 #include <cstdint>
 #include <string>
 
-/*
- * @brief: ID3 version 1.0 data structure.
+/**
+ * @struct ID3v10Data
+ *
+ * @brief ID3 tag version 1.0 data structure.
  */
 struct ID3v10Data{
-    uint8_t identification[3];
-    uint8_t title[30];
-    uint8_t artist[30];
-    uint8_t album[30];
-    uint8_t year[4];
-    uint8_t comment[30];
-    uint8_t genre[1];
+	/**
+	 * @var uint8_t ID3v10Data::identification[3]
+	 *
+	 * @brief Array holding 3-byte text identification for the tag.
+	 */
+	uint8_t identification[3];
+
+	/**
+	 * @var uint8_t ID3v10Data::title[30]
+	 *
+	 * @brief Array holding 30-byte title text information of the tag.
+	 */
+	uint8_t title[30];
+
+	/**
+	 * @var uint8_t ID3v10Data::artist[30]
+	 *
+	 * @brief Array holding 30-byte artist text information of the tag.
+	 */
+	uint8_t artist[30];
+
+	/**
+	 * @var uint8_t ID3v10Data::album[30]
+	 *
+	 * @brief Array holding 30-byte album text information of the tag.
+	 */
+	uint8_t album[30];
+
+	/**
+	 * @var uint8_t ID3v10Data::year[4]
+	 *
+	 * @brief Array holding 4-byte year text information of the tag.
+	 */
+	uint8_t year[4];
+
+	/**
+	 * @var uint8_t ID3v10Data::comment[30]
+	 *
+	 * @brief Array holding 30-byte comment text information of the tag.
+	 */
+	uint8_t comment[30];
+
+	/**
+	 * @var uint8_t ID3v10Data::genre[1]
+	 *
+	 * @brief Array holding 1-byte genre number information of the tag.
+	 */
+	uint8_t genre[1];
 };
 
-/*
- * @brief: ID3 tag version 1.0 that holds information in 'data'.
+/**
+ * @class ID3v10
+ *
+ * @brief ID3 tag version 1.0 class that holds information in ID3v10Data structure, providing methods to access and modify ID3v1.0 tag information.
  */
 class ID3v10{
-    public:
+	friend class MP3File;
 
-		/*
-		 * @brief: List of all default music genres.
+	public:
+		/**
+	     * @enum ID3v10::Genre
+	     *
+	     * @brief List of default music genres for ID3v1.0 tags.
+	     */
+		enum Genre{
+	        Blues = 0,               /**< Blues music genre. */
+	        ClassicRock = 1,         /**< Classic Rock music genre. */
+	        Country = 2,             /**< Country music genre. */
+	        Dance = 3,               /**< Dance music genre. */
+	        Disco = 4,               /**< Disco music genre. */
+	        Funk = 5,                /**< Funk music genre. */
+	        Grunge = 6,              /**< Grunge music genre. */
+	        HipHop = 7,              /**< Hip Hop music genre. */
+	        Jazz = 8,                /**< Jazz music genre. */
+	        Metal = 9,               /**< Metal music genre. */
+	        NewAge = 10,             /**< New Age music genre. */
+	        Oldies = 11,             /**< Oldies music genre. */
+	        Other = 12,              /**< Other music genre. */
+	        Pop = 13,                /**< Pop music genre. */
+	        RAndB = 14,              /**< R&B music genre. */
+	        Rap = 15,                /**< Rap music genre. */
+	        Reggae = 16,             /**< Reggae music genre. */
+	        Rock = 17,               /**< Rock music genre. */
+	        Techno = 18,             /**< Techno music genre. */
+	        Industrial = 19,         /**< Industrial music genre. */
+	        Alternative = 20,        /**< Alternative music genre. */
+	        Ska = 21,                /**< Ska music genre. */
+	        DeathMetal = 22,         /**< Death Metal music genre. */
+	        Pranks = 23,             /**< Pranks music genre. */
+	        Soundtrack = 24,         /**< Soundtrack music genre. */
+	        EuroTechno = 25,         /**< Euro Techno music genre. */
+	        Ambient = 26,            /**< Ambient music genre. */
+	        TripHop = 27,            /**< Trip Hop music genre. */
+	        Vocal = 28,              /**< Vocal music genre. */
+	        JazzFunk = 29,           /**< Jazz Funk music genre. */
+	        Fusion = 30,             /**< Fusion music genre. */
+	        Trance = 31,             /**< Trance music genre. */
+	        Classical = 32,          /**< Classical music genre. */
+	        Instrumental = 33,       /**< Instrumental music genre. */
+	        Acid = 34,               /**< Acid music genre. */
+	        House = 35,              /**< House music genre. */
+	        Game = 36,               /**< Game music genre. */
+	        SoundClip = 37,          /**< Sound Clip music genre. */
+	        Gospel = 38,             /**< Gospel music genre. */
+	        Noise = 39,              /**< Noise music genre. */
+	        AlternRock = 40,         /**< Alternative Rock music genre. */
+	        Bass = 41,               /**< Bass music genre. */
+	        Soul = 42,               /**< Soul music genre. */
+	        Punk = 43,               /**< Punk music genre. */
+	        Space = 44,              /**< Space music genre. */
+	        Meditative = 45,         /**< Meditative music genre. */
+	        InstrumentalPop = 46,    /**< Instrumental Pop music genre. */
+	        InstrumentalRock = 47,   /**< Instrumental Rock music genre. */
+	        Ethnic = 48,             /**< Ethnic music genre. */
+	        Gothic = 49,             /**< Gothic music genre. */
+	        Darkwave = 50,           /**< Darkwave music genre. */
+	        TechnoIndustrial = 51,   /**< Techno Industrial music genre. */
+	        Electronic = 52,         /**< Electronic music genre. */
+	        PopFolk = 53,            /**< Pop Folk music genre. */
+	        Eurodance = 54,          /**< Eurodance music genre. */
+	        Dream = 55,              /**< Dream music genre. */
+	        SouthernRock = 56,       /**< Southern Rock music genre. */
+	        Comedy = 57,             /**< Comedy music genre. */
+	        Cult = 58,               /**< Cult music genre. */
+	        Gangsta = 59,            /**< Gangsta music genre. */
+	        Top40 = 60,              /**< Top 40 music genre. */
+	        ChristianRap = 61,       /**< Christian Rap music genre. */
+	        PopOrFunk = 62,          /**< Pop or Funk music genre. */
+	        Jungle = 63,             /**< Jungle music genre. */
+	        NativeAmerican = 64,     /**< Native American music genre. */
+	        Cabaret = 65,            /**< Cabaret music genre. */
+	        NewWave = 66,            /**< New Wave music genre. */
+	        Psychadelic = 67,        /**< Psychadelic music genre. */
+	        Rave = 68,               /**< Rave music genre. */
+	        Showtunes = 69,          /**< Showtunes music genre. */
+	        Trailer = 70,            /**< Trailer music genre. */
+	        LoFi = 71,               /**< Lo-Fi music genre. */
+	        Tribal = 72,             /**< Tribal music genre. */
+	        AcidPunk = 73,           /**< Acid Punk music genre. */
+	        AcidJazz = 74,           /**< Acid Jazz music genre. */
+	        Polka = 75,              /**< Polka music genre. */
+	        Retro = 76,              /**< Retro music genre. */
+	        Musical = 77,            /**< Musical music genre. */
+	        RockAndRoll = 78,        /**< Rock and Roll music genre. */
+	        HardRock = 79            /**< Hard Rock music genre. */
+	    };
+
+		/**
+		 * @brief Default constructor that initializes the object with clear data.
 		 */
-        enum Genre{
-            Blues = 0,
-            ClassicRock = 1,
-            Country = 2,
-            Dance = 3,
-            Disco = 4,
-            Funk = 5,
-            Grunge = 6,
-            HipHop = 7,
-            Jazz = 8,
-            Metal = 9,
-            NewAge = 10,
-            Oldies = 11,
-            Other = 12,
-            Pop = 13,
-            RAndB = 14,
-            Rap = 15,
-            Reggae = 16,
-            Rock = 17,
-            Techno = 18,
-            Industrial = 19,
-            Alternative = 20,
-            Ska = 21,
-            DeathMetal = 22,
-            Pranks = 23,
-            Soundtrack = 24,
-            EuroTechno = 25,
-            Ambient = 26,
-            TripHop = 27,
-            Vocal = 28,
-            JazzFunk = 29,
-            Fusion = 30,
-            Trance = 31,
-            Classical = 32,
-            Instrumental = 33,
-            Acid = 34,
-            House = 35,
-            Game = 36,
-            SoundClip = 37,
-            Gospel = 38,
-            Noise = 39,
-            AlternRock = 40,
-            Bass = 41,
-            Soul = 42,
-            Punk = 43,
-            Space = 44,
-            Meditative = 45,
-            InstrumentalPop = 46,
-            InstrumentalRock = 47,
-            Ethnic = 48,
-            Gothic = 49,
-            Darkwave = 50,
-            TechnoIndustrial = 51,
-            Electronic = 52,
-            PopFolk = 53,
-            Eurodance = 54,
-            Dream = 55,
-            SouthernRock = 56,
-            Comedy = 57,
-            Cult = 58,
-            Gangsta = 59,
-            Top40 = 60,
-            ChristianRap = 61,
-            PopOrFunk = 62,
-            Jungle = 63,
-            NativeAmerican = 64,
-            Cabaret = 65,
-            NewWave = 66,
-            Psychadelic = 67,
-            Rave = 68,
-            Showtunes = 69,
-            Trailer = 70,
-            LoFi = 71,
-            Tribal = 72,
-            AcidPunk = 73,
-            AcidJazz = 74,
-            Polka = 75,
-            Retro = 76,
-            Musical = 77,
-            RockAndRoll = 78,
-            HardRock = 79
-        };
+		ID3v10();
 
-    public:
-        /*
-		 * @brief: Default constructor.
+		/**
+		 * @brief Virtual destructor that finalizes the object with clear data.
 		 */
-        ID3v10();
+		virtual ~ID3v10();
 
-        /*
-		 * @brief: Default virtual destructor.
+		/**
+		 * @brief Get the title from 'ID3v10::data.title' as std::string.
+		 *
+		 * @return Copy of the title (up to 30 characters).
 		 */
-        virtual ~ID3v10();
+		std::string getTitle() const;
 
-    public:
-        /*
-		 * @brief: Get 'data.title' as std::string.
-		 * @return: Copy of the data.
+		/**
+		 * @brief Set a new title in 'ID3v10::data.title'.
+		 *
+		 * @param title New title to set (up to 30 characters).
 		 */
-        std::string getTitle() const;
+		void setTitle(const std::string& title);
 
-        /*
-		 * @brief: Set a new title in 'data.title'.
+		/**
+		 * @brief Get the artist from 'ID3v10::data.artist' as std::string.
+		 *
+		 * @return Copy of the artist name (up to 30 characters).
 		 */
-        void setTitle(std::string& title);
+		std::string getArtist() const;
 
-        /*
-		 * @brief: Get 'data.artist' as std::string.
-		 * @return: Copy of the data.
+		/**
+		 * @brief Set a new artist in 'ID3v10::data.artist'.
+		 *
+		 * @param artist New artist name to set (up to 30 characters).
 		 */
-        std::string getArtist() const;
+		void setArtist(const std::string& artist);
 
-        /*
-		 * @brief: Set a new artist in 'data.artist'.
+		/**
+		 * @brief Get the album from 'ID3v10::data.album' as std::string.
+		 *
+		 * @return Copy of the album name (up to 30 characters).
 		 */
-        void setArtist(std::string& artist);
+		std::string getAlbum() const;
 
-        /*
-		 * @brief: Get 'data.album' as std::string.
-		 * @return: Copy of the data.
+		/**
+		 * @brief Set a new album in 'ID3v10::data.album'.
+		 *
+		 * @param album New album name to set (up to 30 characters).
 		 */
-        std::string getAlbum() const;
+		void setAlbum(const std::string& album);
 
-        /*
-		 * @brief: Set a new album in 'data.album'.
+		/**
+		 * @brief Get the year from 'ID3v10::data.year' as std::string.
+		 *
+		 * @return Copy of the year (fixed 4 characters).
 		 */
-        void setAlbum(std::string& album);
+		std::string getYear() const;
 
-        /*
-		 * @brief: Get 'data.year' as std::string.
-		 * @return: Copy of the data.
+		/**
+		 * @brief Set a new year in 'ID3v10::data.year'.
+		 *
+		 * @param year New year to set (fixed 4 characters).
 		 */
-        std::string getYear() const;
+		void setYear(const std::string& year);
 
-        /*
-		 * @brief: Set a new year in 'data.year'.
+		/**
+		 * @brief Get the comment from 'ID3v10::data.comment' as std::string.
+		 *
+		 * @return Copy of the comment (up to 30 characters).
 		 */
-        void setYear(std::string& year);
+		std::string getComment() const;
 
-        /*
-		 * @brief: Get 'data.comment' as std::string.
-		 * @return: Copy of the data.
+		/**
+		 * @brief Set a new comment in 'ID3v10::data.comment'.
+		 *
+		 * @param comment New comment to set (up to 30 characters).
 		 */
-        std::string getComment() const;
+		void setComment(const std::string& comment);
 
-        /*
-		 * @brief: Set a new comment in 'data.comment'.
+		/**
+		 * @brief Get the genre from 'ID3v10::data.genre' as ID3v10::Genre.
+		 *
+		 * @return Genre index.
 		 */
-        void setComment(std::string& comment);
+		ID3v10::Genre getGenre() const;
 
-        /*
-		 * @brief: Get 'data.genre' as std::string.
-		 * @return: Copy of the data.
+		/**
+		 * @brief Set a new genre in 'ID3v10::data.genre'.
+		 *
+		 * @param genre Genre index to set.
 		 */
-        ID3v10::Genre getGenre() const;
+		void setGenre(ID3v10::Genre genre);
 
-        /*
-		 * @brief: Set a new genre in 'data.genre'.
-		 */
-        void setGenre(ID3v10::Genre genre);
-
-    public:
-        ID3v10Data data;
+    private:
+	   /**
+	    * @var ID3v10Data ID3v10::data
+	    *
+	    * @brief Structure holding ID3 version 1.0 data fields.
+	    */
+	   ID3v10Data data;
 };
 
 #endif /* ID3V10_HPP */

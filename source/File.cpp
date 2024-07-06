@@ -1,6 +1,7 @@
 #include "File.hpp"
 
 #include <fstream>
+#include <stdexcept>
 
 File::File() :
 	data(nullptr), size(0){
@@ -25,6 +26,14 @@ bool File::isEmpty() const{
 	}else{
 		return false;
 	}
+}
+
+uint8_t& File::operator[](uint64_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Index out of range");
+    } else {
+        return data[index];
+    }
 }
 
 bool File::load(const char *filename){
