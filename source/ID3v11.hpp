@@ -23,7 +23,7 @@
  *
  * @brief ID3 tag version 1.1 data structure.
  */
-struct ID3v11Data {
+struct ID3v11Data{
     /**
      * @var uint8_t ID3v11Data::identification[3]
      *
@@ -87,6 +87,8 @@ struct ID3v11Data {
  * @brief ID3 tag version 1.1 class that holds information in ID3v11Data structure, providing methods to access and modify ID3v1.1 tag information.
  */
 class ID3v11{
+	friend class MP3File;
+
 	public:
 		/**
 		 * @brief Default constructor that initializes the object with clear data.
@@ -197,7 +199,12 @@ class ID3v11{
 		 */
 		void setGenre(ID3v10::Genre genre);
 
-	public:
+	private:
+		/**
+		 * @var ID3v11Data ID3v11::data
+		 *
+		 * @brief Structure holding ID3 version 1.1 data fields.
+		 */
 		ID3v11Data data;
 };
 

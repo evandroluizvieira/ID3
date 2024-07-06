@@ -1,0 +1,13 @@
+#include "../source/File.hpp"
+#include "../source/MP3File.hpp"
+
+#include "../source/ID3v10.hpp"
+#include "../source/ID3v11.hpp"
+#include "../source/ID3v1.hpp"
+
+#include "../source/ID3v20.hpp"
+#include "../source/ID3v23.hpp"
+#include "../source/ID3v24.hpp"
+#include "../source/ID3v2.hpp"
+
+#include "../source/ID3.hpp"
