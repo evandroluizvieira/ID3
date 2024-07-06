@@ -10,27 +10,27 @@ ID3v23Header::~ID3v23Header(){
 }
 
 void ID3v23Header::setExtendedHeader(bool hasExtendedHeader){
-    if (hasExtendedHeader) {
-        flags |= 0x40;
-    } else {
-        flags &= ~0x40;
-    }
+	if(hasExtendedHeader){
+		flags |= 0x40;
+	}else{
+		flags &= ~0x40;
+	}
 }
 
 bool ID3v23Header::hasExtendedHeader() const{
-    return (flags & 0x40) != 0;
+	return (flags & 0x40) != 0;
 }
 
 void ID3v23Header::setExperimental(bool isExperimental){
-    if(isExperimental){
-        flags |= 0x20;
-    }else{
-        flags &= ~0x20;
-    }
+	if(isExperimental){
+		flags |= 0x20;
+	}else{
+		flags &= ~0x20;
+	}
 }
 
 bool ID3v23Header::isExperimental() const{
-    return (flags & 0x20) != 0;
+	return (flags & 0x20) != 0;
 }
 
 ID3v23::ID3v23(){

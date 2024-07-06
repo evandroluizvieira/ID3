@@ -54,10 +54,10 @@ class ID3v2HeaderBase{
 		 *
 		 * @note Checks the ID3 official documentation of each version for details .
 		 */
-	    void setUnsynchronized(bool useUnsynchronization);
+		void setUnsynchronized(bool useUnsynchronization);
 
 	public:
-	    /**
+		/**
 		 * @var uint8_t ID3v2HeaderBase::tag[3]
 		 *
 		 * @brief Tag identifier, always set "ID3" for ID3v2.0, ID3v2.3, and ID3v2.4.
@@ -105,20 +105,18 @@ class ID3v2HeaderBase{
  * @see ID3v24 specification in https://id3.org/id3v2.4.0-structure
  */
 union ID3v2{
-	friend class MP3File;
-
-    public:
+	public:
 		/**
 		 * @brief Default constructor that ensures all members are cleared.
 		 */
-        ID3v2();
+		ID3v2();
 
-        /**
+		/**
 		 * @brief: Destructor that calls ID3v2::clear().
 		 */
-        ~ID3v2();
+		~ID3v2();
 
-        /**
+		/**
 		 * @brief: Check if is the ID3 version 2.0.
 		 *
 		 * @return: true if is the version 2.0, false otherwise.
@@ -130,41 +128,41 @@ union ID3v2{
 		 *
 		 * @return: true if is the version 2.3, false otherwise.
 		 */
-        bool isV23() const;
+		bool isV23() const;
 
-        /**
+		/**
 		 * @brief: Check if is the ID3 version 2.4.
 		 *
 		 * @return: true if is the version 2.4, false otherwise.
 		 */
-        bool isV24() const;
+		bool isV24() const;
 
-        /**
+		/**
 		 * @brief: Deallocate ID3v20::v20, ID3v23::v23 and ID3v24::v24 if they are not null and clear their pointers.
 		 */
-        void clear();
+		void clear();
 
-    public:
-        /**
+	public:
+		/**
 		 * @var ID3v20* ID3v20::v20
 		 *
 		 * @brief Pointer to a ID3v20*, used to stores the ID3 version 2.0 data.
 		 */
-        ID3v20* v20;
+		ID3v20* v20;
 
-        /**
+		/**
 		 * @var ID3v23* ID3v23::v23
 		 *
 		 * @brief Pointer to a ID3v23*, used to stores the ID3 version 2.3 data.
 		 */
-        ID3v23* v23;
+		ID3v23* v23;
 
-        /**
+		/**
 		 * @var ID3v24* ID3v24::v24
 		 *
 		 * @brief Pointer to a ID3v24*, used to stores the ID3 version 2.4 data.
 		 */
-        ID3v24* v24;
+		ID3v24* v24;
 };
 
 #endif /* ID3V2_HPP */

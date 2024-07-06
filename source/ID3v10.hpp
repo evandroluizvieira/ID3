@@ -82,92 +82,92 @@ class ID3v10{
 
 	public:
 		/**
-	     * @enum ID3v10::Genre
-	     *
-	     * @brief List of default music genres for ID3v1.0 tags.
-	     */
+		 * @enum ID3v10::Genre
+		 *
+		 * @brief List of default music genres for ID3v1.0 tags.
+		 */
 		enum Genre{
-	        Blues = 0,               /**< Blues music genre. */
-	        ClassicRock = 1,         /**< Classic Rock music genre. */
-	        Country = 2,             /**< Country music genre. */
-	        Dance = 3,               /**< Dance music genre. */
-	        Disco = 4,               /**< Disco music genre. */
-	        Funk = 5,                /**< Funk music genre. */
-	        Grunge = 6,              /**< Grunge music genre. */
-	        HipHop = 7,              /**< Hip Hop music genre. */
-	        Jazz = 8,                /**< Jazz music genre. */
-	        Metal = 9,               /**< Metal music genre. */
-	        NewAge = 10,             /**< New Age music genre. */
-	        Oldies = 11,             /**< Oldies music genre. */
-	        Other = 12,              /**< Other music genre. */
-	        Pop = 13,                /**< Pop music genre. */
-	        RAndB = 14,              /**< R&B music genre. */
-	        Rap = 15,                /**< Rap music genre. */
-	        Reggae = 16,             /**< Reggae music genre. */
-	        Rock = 17,               /**< Rock music genre. */
-	        Techno = 18,             /**< Techno music genre. */
-	        Industrial = 19,         /**< Industrial music genre. */
-	        Alternative = 20,        /**< Alternative music genre. */
-	        Ska = 21,                /**< Ska music genre. */
-	        DeathMetal = 22,         /**< Death Metal music genre. */
-	        Pranks = 23,             /**< Pranks music genre. */
-	        Soundtrack = 24,         /**< Soundtrack music genre. */
-	        EuroTechno = 25,         /**< Euro Techno music genre. */
-	        Ambient = 26,            /**< Ambient music genre. */
-	        TripHop = 27,            /**< Trip Hop music genre. */
-	        Vocal = 28,              /**< Vocal music genre. */
-	        JazzFunk = 29,           /**< Jazz Funk music genre. */
-	        Fusion = 30,             /**< Fusion music genre. */
-	        Trance = 31,             /**< Trance music genre. */
-	        Classical = 32,          /**< Classical music genre. */
-	        Instrumental = 33,       /**< Instrumental music genre. */
-	        Acid = 34,               /**< Acid music genre. */
-	        House = 35,              /**< House music genre. */
-	        Game = 36,               /**< Game music genre. */
-	        SoundClip = 37,          /**< Sound Clip music genre. */
-	        Gospel = 38,             /**< Gospel music genre. */
-	        Noise = 39,              /**< Noise music genre. */
-	        AlternRock = 40,         /**< Alternative Rock music genre. */
-	        Bass = 41,               /**< Bass music genre. */
-	        Soul = 42,               /**< Soul music genre. */
-	        Punk = 43,               /**< Punk music genre. */
-	        Space = 44,              /**< Space music genre. */
-	        Meditative = 45,         /**< Meditative music genre. */
-	        InstrumentalPop = 46,    /**< Instrumental Pop music genre. */
-	        InstrumentalRock = 47,   /**< Instrumental Rock music genre. */
-	        Ethnic = 48,             /**< Ethnic music genre. */
-	        Gothic = 49,             /**< Gothic music genre. */
-	        Darkwave = 50,           /**< Darkwave music genre. */
-	        TechnoIndustrial = 51,   /**< Techno Industrial music genre. */
-	        Electronic = 52,         /**< Electronic music genre. */
-	        PopFolk = 53,            /**< Pop Folk music genre. */
-	        Eurodance = 54,          /**< Eurodance music genre. */
-	        Dream = 55,              /**< Dream music genre. */
-	        SouthernRock = 56,       /**< Southern Rock music genre. */
-	        Comedy = 57,             /**< Comedy music genre. */
-	        Cult = 58,               /**< Cult music genre. */
-	        Gangsta = 59,            /**< Gangsta music genre. */
-	        Top40 = 60,              /**< Top 40 music genre. */
-	        ChristianRap = 61,       /**< Christian Rap music genre. */
-	        PopOrFunk = 62,          /**< Pop or Funk music genre. */
-	        Jungle = 63,             /**< Jungle music genre. */
-	        NativeAmerican = 64,     /**< Native American music genre. */
-	        Cabaret = 65,            /**< Cabaret music genre. */
-	        NewWave = 66,            /**< New Wave music genre. */
-	        Psychadelic = 67,        /**< Psychadelic music genre. */
-	        Rave = 68,               /**< Rave music genre. */
-	        Showtunes = 69,          /**< Showtunes music genre. */
-	        Trailer = 70,            /**< Trailer music genre. */
-	        LoFi = 71,               /**< Lo-Fi music genre. */
-	        Tribal = 72,             /**< Tribal music genre. */
-	        AcidPunk = 73,           /**< Acid Punk music genre. */
-	        AcidJazz = 74,           /**< Acid Jazz music genre. */
-	        Polka = 75,              /**< Polka music genre. */
-	        Retro = 76,              /**< Retro music genre. */
-	        Musical = 77,            /**< Musical music genre. */
-	        RockAndRoll = 78,        /**< Rock and Roll music genre. */
-	        HardRock = 79            /**< Hard Rock music genre. */
-	    };
+			Blues = 0,				/**< Blues music genre. */
+			ClassicRock = 1,		/**< Classic Rock music genre. */
+			Country = 2,			/**< Country music genre. */
+			Dance = 3,				/**< Dance music genre. */
+			Disco = 4,				/**< Disco music genre. */
+			Funk = 5,				/**< Funk music genre. */
+			Grunge = 6,				/**< Grunge music genre. */
+			HipHop = 7,				/**< Hip Hop music genre. */
+			Jazz = 8,				/**< Jazz music genre. */
+			Metal = 9,				/**< Metal music genre. */
+			NewAge = 10,			/**< New Age music genre. */
+			Oldies = 11,			/**< Oldies music genre. */
+			Other = 12,				/**< Other music genre. */
+			Pop = 13,				/**< Pop music genre. */
+			RAndB = 14,				/**< R&B music genre. */
+			Rap = 15,				/**< Rap music genre. */
+			Reggae = 16,			/**< Reggae music genre. */
+			Rock = 17,				/**< Rock music genre. */
+			Techno = 18,			/**< Techno music genre. */
+			Industrial = 19,		/**< Industrial music genre. */
+			Alternative = 20,		/**< Alternative music genre. */
+			Ska = 21,				/**< Ska music genre. */
+			DeathMetal = 22,		/**< Death Metal music genre. */
+			Pranks = 23,			/**< Pranks music genre. */
+			Soundtrack = 24,		/**< Soundtrack music genre. */
+			EuroTechno = 25,		/**< Euro Techno music genre. */
+			Ambient = 26,			/**< Ambient music genre. */
+			TripHop = 27,			/**< Trip Hop music genre. */
+			Vocal = 28,				/**< Vocal music genre. */
+			JazzFunk = 29,			/**< Jazz Funk music genre. */
+			Fusion = 30,			/**< Fusion music genre. */
+			Trance = 31,			/**< Trance music genre. */
+			Classical = 32,			/**< Classical music genre. */
+			Instrumental = 33,		/**< Instrumental music genre. */
+			Acid = 34,				/**< Acid music genre. */
+			House = 35,				/**< House music genre. */
+			Game = 36,				/**< Game music genre. */
+			SoundClip = 37,			/**< Sound Clip music genre. */
+			Gospel = 38,			/**< Gospel music genre. */
+			Noise = 39,				/**< Noise music genre. */
+			AlternRock = 40,		/**< Alternative Rock music genre. */
+			Bass = 41,				/**< Bass music genre. */
+			Soul = 42,				/**< Soul music genre. */
+			Punk = 43,				/**< Punk music genre. */
+			Space = 44,				/**< Space music genre. */
+			Meditative = 45,		/**< Meditative music genre. */
+			InstrumentalPop = 46,	/**< Instrumental Pop music genre. */
+			InstrumentalRock = 47,	/**< Instrumental Rock music genre. */
+			Ethnic = 48,			/**< Ethnic music genre. */
+			Gothic = 49,			/**< Gothic music genre. */
+			Darkwave = 50,			/**< Darkwave music genre. */
+			TechnoIndustrial = 51,	/**< Techno Industrial music genre. */
+			Electronic = 52,		/**< Electronic music genre. */
+			PopFolk = 53,			/**< Pop Folk music genre. */
+			Eurodance = 54,			/**< Eurodance music genre. */
+			Dream = 55,				/**< Dream music genre. */
+			SouthernRock = 56,		/**< Southern Rock music genre. */
+			Comedy = 57,			/**< Comedy music genre. */
+			Cult = 58,				/**< Cult music genre. */
+			Gangsta = 59,			/**< Gangsta music genre. */
+			Top40 = 60,				/**< Top 40 music genre. */
+			ChristianRap = 61,		/**< Christian Rap music genre. */
+			PopOrFunk = 62,			/**< Pop or Funk music genre. */
+			Jungle = 63,			/**< Jungle music genre. */
+			NativeAmerican = 64,	/**< Native American music genre. */
+			Cabaret = 65,			/**< Cabaret music genre. */
+			NewWave = 66,			/**< New Wave music genre. */
+			Psychadelic = 67,		/**< Psychadelic music genre. */
+			Rave = 68,				/**< Rave music genre. */
+			Showtunes = 69,			/**< Showtunes music genre. */
+			Trailer = 70,			/**< Trailer music genre. */
+			LoFi = 71,				/**< Lo-Fi music genre. */
+			Tribal = 72,			/**< Tribal music genre. */
+			AcidPunk = 73,			/**< Acid Punk music genre. */
+			AcidJazz = 74,			/**< Acid Jazz music genre. */
+			Polka = 75,				/**< Polka music genre. */
+			Retro = 76,				/**< Retro music genre. */
+			Musical = 77,			/**< Musical music genre. */
+			RockAndRoll = 78,		/**< Rock and Roll music genre. */
+			HardRock = 79			/**< Hard Rock music genre. */
+		};
 
 		/**
 		 * @brief Default constructor that initializes the object with clear data.
@@ -264,12 +264,12 @@ class ID3v10{
 		void setGenre(ID3v10::Genre genre);
 
     private:
-	   /**
-	    * @var ID3v10Data ID3v10::data
-	    *
-	    * @brief Structure holding ID3 version 1.0 data fields.
-	    */
-	   ID3v10Data data;
+		/**
+		 * @var ID3v10Data ID3v10::data
+		 *
+		 * @brief Structure holding ID3 version 1.0 data fields.
+		 */
+		ID3v10Data data;
 };
 
 #endif /* ID3V10_HPP */

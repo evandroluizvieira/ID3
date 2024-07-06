@@ -1,6 +1,18 @@
 #ifndef ID3V20_HPP
 #define ID3V20_HPP
 
+/**
+ * @file ID3v20.hpp
+ *
+ * @author Evandro L. Vieira
+ *
+ * @date 06/07/2024
+ *
+ * @version 1.0
+ *
+ * @brief This file contains the definition of the class ID3v20 and class ID3v20Header.
+ */
+
 #include "ID3v2.hpp"
 
 /**

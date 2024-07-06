@@ -40,19 +40,19 @@ ID3v2::ID3v2(){
 }
 
 ID3v2::~ID3v2(){
-    clear();
+	clear();
 }
 
 bool ID3v2::isV20() const{
-    return v20 != nullptr;
+	return v20 != nullptr;
 }
 
 bool ID3v2::isV23() const{
-    return v23 != nullptr;
+	return v23 != nullptr;
 }
 
 bool ID3v2::isV24() const{
-    return v24 != nullptr;
+	return v24 != nullptr;
 }
 
 void ID3v2::clear(){
@@ -61,12 +61,12 @@ void ID3v2::clear(){
 		v20 = nullptr;
 	}
 
-    if(v23 != nullptr){
+	if(v23 != nullptr){
 		delete v23;
 		v23 = nullptr;
 	}
 
-    if(v24 != nullptr){
+	if(v24 != nullptr){
 		delete v24;
 		v24 = nullptr;
 	}

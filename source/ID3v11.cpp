@@ -67,11 +67,11 @@ void ID3v11::setComment(const std::string& comment){
 }
 
 int ID3v11::getTrack() const{
-    return static_cast<int>(data.track[0]);
+	return static_cast<int>(data.track[0]);
 }
 
 void ID3v11::setTrack(int track){
-    data.track[0] = static_cast<uint8_t>(track);
+	data.track[0] = static_cast<uint8_t>(track);
 }
 
 ID3v10::Genre ID3v11::getGenre() const{

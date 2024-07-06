@@ -24,61 +24,61 @@
  * @brief ID3 tag version 1.1 data structure.
  */
 struct ID3v11Data{
-    /**
-     * @var uint8_t ID3v11Data::identification[3]
-     *
-     * @brief Array holding 3-byte text identification for the tag.
-     */
-    uint8_t identification[3];
+	/**
+	 * @var uint8_t ID3v11Data::identification[3]
+	 *
+	 * @brief Array holding 3-byte text identification for the tag.
+	*/
+	uint8_t identification[3];
 
-    /**
-     * @var uint8_t ID3v11Data::title[30]
-     *
-     * @brief Array holding 30-byte title text information of the tag.
-     */
-    uint8_t title[30];
+	/**
+	 * @var uint8_t ID3v11Data::title[30]
+	 *
+	 * @brief Array holding 30-byte title text information of the tag.
+	 */
+	uint8_t title[30];
 
-    /**
-     * @var uint8_t ID3v11Data::artist[30]
-     *
-     * @brief Array holding 30-byte artist text information of the tag.
-     */
-    uint8_t artist[30];
+	/**
+	 * @var uint8_t ID3v11Data::artist[30]
+	 *
+	 * @brief Array holding 30-byte artist text information of the tag.
+	 */
+	uint8_t artist[30];
 
-    /**
-     * @var uint8_t ID3v11Data::album[30]
-     *
-     * @brief Array holding 30-byte album text information of the tag.
-     */
-    uint8_t album[30];
+	/**
+	 * @var uint8_t ID3v11Data::album[30]
+	 *
+	 * @brief Array holding 30-byte album text information of the tag.
+	 */
+	uint8_t album[30];
 
-    /**
-     * @var uint8_t ID3v11Data::year[4]
-     *
-     * @brief Array holding 4-byte year text information of the tag.
-     */
-    uint8_t year[4];
+	/**
+	 * @var uint8_t ID3v11Data::year[4]
+	 *
+	 * @brief Array holding 4-byte year text information of the tag.
+	 */
+	uint8_t year[4];
 
-    /**
-     * @var uint8_t ID3v11Data::comment[29]
-     *
-     * @brief Array holding 29-byte comment text information of the tag.
-     */
-    uint8_t comment[29];
+	/**
+	 * @var uint8_t ID3v11Data::comment[29]
+	 *
+	 * @brief Array holding 29-byte comment text information of the tag.
+	 */
+	uint8_t comment[29];
 
-    /**
-     * @var uint8_t ID3v11Data::track[1]
-     *
-     * @brief Array holding 1-byte track number information of the tag.
-     */
-    uint8_t track[1];
+	/**
+	 * @var uint8_t ID3v11Data::track[1]
+	 *
+	 * @brief Array holding 1-byte track number information of the tag.
+	 */
+	uint8_t track[1];
 
-    /**
-     * @var uint8_t ID3v11Data::genre[1]
-     *
-     * @brief Array holding 1-byte genre number information of the tag.
-     */
-    uint8_t genre[1];
+	/**
+	 * @var uint8_t ID3v11Data::genre[1]
+	 *
+	 * @brief Array holding 1-byte genre number information of the tag.
+	 */
+	uint8_t genre[1];
 };
 
 /**
@@ -100,7 +100,6 @@ class ID3v11{
 		 */
 		virtual ~ID3v11();
 
-	public:
 		/**
 		 * @brief Get the title from 'ID3v11::data.title' as std::string.
 		 *

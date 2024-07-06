@@ -31,7 +31,6 @@ class MP3File : public File{
 		 */
 		virtual ~MP3File();
 
-	public:
 		/**
 		 * @brief Check if loaded data contains ID3 tag version 1.0.
 		 *

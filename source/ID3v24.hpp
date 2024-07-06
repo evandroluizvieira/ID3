@@ -1,6 +1,18 @@
 #ifndef ID3V24_HPP
 #define ID3V24_HPP
 
+/**
+ * @file ID3v24.hpp
+ *
+ * @author Evandro L. Vieira
+ *
+ * @date 06/07/2024
+ *
+ * @version 1.0
+ *
+ * @brief This file contains the definition of the class ID3v24 and class ID3v24Header.
+ */
+
 #include "ID3v23.hpp"
 
 /**

@@ -1,6 +1,18 @@
 #ifndef ID3V23_HPP
 #define ID3V23_HPP
 
+/**
+ * @file ID3v23.hpp
+ *
+ * @author Evandro L. Vieira
+ *
+ * @date 06/07/2024
+ *
+ * @version 1.0
+ *
+ * @brief This file contains the definition of the class ID3v23 and class ID3v23Header.
+ */
+
 #include "ID3v2.hpp"
 
 /**

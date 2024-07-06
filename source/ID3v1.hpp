@@ -27,52 +27,50 @@
  * @see ID3v11 specification in https://id3.org/ID3v1
  */
 union ID3v1{
-	friend class MP3File;
-
-    public:
+	public:
 		/**
 		 * @brief Default constructor that ensures all members are cleared.
 		 */
-        ID3v1();
+		ID3v1();
 
-        /**
+		/**
 		 * @brief: Destructor that calls ID3v1::clear().
 		 */
-        ~ID3v1();
+		~ID3v1();
 
-        /**
+		/**
 		 * @brief: Check if is the ID3 version 1.0.
 		 *
 		 * @return: true if is the version 1.0, false otherwise.
 		 */
-        bool isV10() const;
+		bool isV10() const;
 
-        /**
+		/**
 		 * @brief: Check if is the ID3 version 1.1.
 		 *
 		 * @return: true if is the version 1.1, false otherwise.
 		 */
-        bool isV11() const;
+		bool isV11() const;
 
-        /**
+		/**
 		 * @brief: Deallocate ID3v1::v10 and ID3v1::v11 if they are not null and clear their pointers.
 		 */
-        void clear();
+		void clear();
 
-    private:
-        /**
+	public:
+		/**
 		 * @var ID3v10* ID3v1::v10
 		 *
 		 * @brief Pointer to a ID3v10*, used to stores the ID3 version 1.0 data.
 		 */
-        ID3v10* v10;
+		ID3v10* v10;
 
-        /**
+		/**
 		 * @var ID3v11* ID3v1::v11
 		 *
 		 * @brief Pointer to a ID3v11*, used to stores the ID3 version 1.1 data.
 		 */
-        ID3v11* v11;
+		ID3v11* v11;
 };
 
 #endif /* ID3V1_HPP */
