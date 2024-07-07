@@ -34,14 +34,9 @@ class ID3{
 		ID3();
 
 		/**
-		 * @brief: Destructor that calls ID3::clear().
+		 * @brief Default virtual destructor.
 		 */
 		virtual ~ID3();
-
-		 /**
-		 * @brief: Deallocate ID3::v1 and ID3::v2 if they are not null and clear their pointers.
-		 */
-		void clear();
 
 	public:
 		/**
@@ -49,14 +44,14 @@ class ID3{
 		 *
 		 * @brief Pointer to ID3v1 instance for ID3 tag version 1.
 		 */
-		ID3v1* v1;
+		ID3v1 v1;
 
 		/**
 		 * @var ID3v2* ID3::v2
 		 *
 		 * @brief Pointer to ID3v2 instance for ID3 tag version 2.
 		 */
-		ID3v2* v2;
+		ID3v2 v2;
 };
 
 #endif /* ID3_HPP */

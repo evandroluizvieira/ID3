@@ -66,12 +66,12 @@ void ID3v11::setComment(const std::string& comment){
 	std::memcpy(data.comment, comment.c_str(), comment.length());
 }
 
-int ID3v11::getTrack() const{
-	return static_cast<int>(data.track[0]);
+uint8_t ID3v11::getTrack() const{
+	return data.track[0];
 }
 
-void ID3v11::setTrack(int track){
-	data.track[0] = static_cast<uint8_t>(track);
+void ID3v11::setTrack(uint8_t track){
+	data.track[0] = track;
 }
 
 ID3v10::Genre ID3v11::getGenre() const{

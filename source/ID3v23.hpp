@@ -80,7 +80,7 @@ class ID3v23{
 		 */
 		virtual ~ID3v23();
 
-	private:
+	public:
 		/**
 		 * @var ID3v23Header ID3v23::header
 		 *

@@ -66,7 +66,7 @@ class ID3v24{
 		 */
 		virtual ~ID3v24();
 
-	private:
+	public:
 		/**
 		 * @var ID3v24Header ID3v24::header
 		 *

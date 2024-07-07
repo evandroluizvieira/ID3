@@ -171,18 +171,18 @@ class ID3v11{
 		void setComment(const std::string& comment);
 
 		/**
-		 * @brief Get the track number from 'ID3v11::data.track' as int.
+		 * @brief Get the track number from 'ID3v11::data.track' as unsigned int.
 		 *
 		 * @return Track number.
 		 */
-		int getTrack() const;
+		uint8_t getTrack() const;
 
 		/**
 		 * @brief Set a new track number in 'ID3v11::data.track'.
 		 *
 		 * @param track New track number to set.
 		 */
-		void setTrack(int track);
+		void setTrack(uint8_t track);
 
 		/**
 		 * @brief Get the genre from 'ID3v11::data.genre' as ID3v10::Genre.
