@@ -1,7 +1,9 @@
 # ID3
 
+![Logo](https://github.com/evandroluizvieira/ID3/blob/master/resource/Brand.png)
+
 [![C++](https://img.shields.io/badge/C++-004488)](https://cplusplus.com/)
-[![BSL1.0 License](https://img.shields.io/badge/License-BSL-green.svg)](https://choosealicense.com/licenses/bsl-1.0/)
+[![BSL1.0 License](https://img.shields.io/badge/License-BSL-green.svg)](https://choosealicense.com/licenses/mit/)
 
 ## Overview
 It is a specific type of metadata used primarily in digital audio files, such as MP3.
@@ -13,5 +15,5 @@ To get started, clone the repository:
 git clone https://github.com/evandroluizvieira/ID3.git
 ```
 
-## Usage
+## Status
 In progress...
