@@ -3,7 +3,7 @@
 ![Logo](https://github.com/evandroluizvieira/ID3/blob/master/resource/Brand.png)
 
 [![C++](https://img.shields.io/badge/C++-004488)](https://cplusplus.com/)
-[![BSL1.0 License](https://img.shields.io/badge/License-BSL-green.svg)](https://choosealicense.com/licenses/mit/)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 ## Overview
 It is a specific type of metadata used primarily in digital audio files, such as MP3.
