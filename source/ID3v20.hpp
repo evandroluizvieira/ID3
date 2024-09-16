@@ -49,26 +49,6 @@ class ID3v20Header : public ID3v2HeaderBase{
 		 * @param useCompression When true, sets the compression flag (bit 6 of flags); when false, clears it.
 		 */
 		void setCompressed(bool useCompression);
-
-		/**
-		 * @brief Retrieves the tag size.
-		 *
-		 * @note The size of the ID3 tag is stored across four bytes where each byte's most significant bit (bit 7) is set to zero.
-		 *       Encoded as a 32-bit integer using synchsafe encoding, this encoding scheme uses 28 effective bits to represent the size.
-		 *
-		 * @return The size of the tag.
-		 */
-		uint32_t getSize() const;
-
-		/**
-		 * @brief Set the tag size.
-		 *
-		 * @note The size of the ID3 tag is stored across four bytes where each byte's most significant bit (bit 7) is set to zero.
-		 *       Encoded as a 32-bit integer using synchsafe encoding, this encoding scheme uses 28 effective bits to represent the size.
-		 *
-		 * @param size The new size to set for the tag.
-		 */
-		void setSize(uint32_t size);
 };
 
 /**
@@ -186,7 +166,7 @@ class ID3v20{
 		/**
 		 * @brief Updates an existing frame identified by its identifier with new data, or creates a new frame if none with the same identifier exists.
 		 *
-		 * @param identifier A 3byte array representing the identifier of the frame.
+		 * @param identifier A 3 byte array representing the identifier of the frame.
 		 * @param size The size of the data to be set in the frame, in bytes.
 		 * @param data Pointer to the data to be copied into the frame.
 		 */

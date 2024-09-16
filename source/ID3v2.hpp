@@ -56,6 +56,26 @@ class ID3v2HeaderBase{
 		 */
 		void setUnsynchronized(bool useUnsynchronization);
 
+		/**
+		 * @brief Retrieves the tag size.
+		 *
+		 * @note The size of the ID3 tag is stored across four bytes where each byte's most significant bit (bit 7) is set to zero.
+		 *       Encoded as a 32-bit integer using synchsafe encoding, this encoding scheme uses 28 effective bits to represent the size.
+		 *
+		 * @return The size of the tag.
+		 */
+		uint32_t getTagSize() const;
+
+		/**
+		 * @brief Set the tag size.
+		 *
+		 * @note The size of the ID3 tag is stored across four bytes where each byte's most significant bit (bit 7) is set to zero.
+		 *       Encoded as a 32-bit integer using synchsafe encoding, this encoding scheme uses 28 effective bits to represent the size.
+		 *
+		 * @param size The new size to set for the tag.
+		 */
+		void setTagSize(uint32_t size);
+
 	public:
 		/**
 		 * @var uint8_t ID3v2HeaderBase::tag[3]

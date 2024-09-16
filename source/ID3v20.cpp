@@ -23,30 +23,6 @@ void ID3v20Header::setCompressed(bool useCompression){
 	}
 }
 
-uint32_t ID3v20Header::getSize() const{
-	uint32_t size = 0;
-
-	// Masking the highest bit of each byte
-	size |= static_cast<uint32_t>(this->size[0] & 0x7F) << 21;
-	size |= static_cast<uint32_t>(this->size[1] & 0x7F) << 14;
-	size |= static_cast<uint32_t>(this->size[2] & 0x7F) << 7;
-	size |= static_cast<uint32_t>(this->size[3] & 0x7F);
-
-	return size;
-}
-
-void ID3v20Header::setSize(uint32_t size){
-	//Ensure size fits within the 28-bit limit
-	if(size > 0x0FFFFFFF){
-		size = 0x0FFFFFFF;
-	}
-
-	this->size[0] = static_cast<uint8_t>((size >> 21) & 0x7F);
-	this->size[1] = static_cast<uint8_t>((size >> 14) & 0x7F);
-	this->size[2] = static_cast<uint8_t>((size >>  7) & 0x7F);
-	this->size[3] = static_cast<uint8_t>( size        & 0x7F);
-}
-
 ID3v20FrameHeader::ID3v20FrameHeader() :
 	identifier{0, 0, 0}, size{0, 0, 0}{
 
@@ -139,7 +115,7 @@ void ID3v20::setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data){
 }
 
 std::string ID3v20::getTitle() const{
-    uint8_t identifier[3] = {'T', 'T', '2'};
+	uint8_t identifier[3] = {'T', 'T', '2'};
 	ID3v20Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
@@ -148,12 +124,12 @@ std::string ID3v20::getTitle() const{
 }
 
 void ID3v20::setTitle(const std::string& title){
-    uint8_t identifier[3] = {'T', 'T', '2'};
-    setFrame(identifier, title.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str())));
+	uint8_t identifier[3] = {'T', 'T', '2'};
+	setFrame(identifier, title.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str())));
 }
 
 std::string ID3v20::getArtist() const{
-    uint8_t identifier[3] = {'T', 'P', '1'};
+	uint8_t identifier[3] = {'T', 'P', '1'};
 	ID3v20Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
@@ -225,18 +201,18 @@ std::string ID3v20::getComment() const{
 }
 
 void ID3v20::setComment(const std::string& comment){
-    uint8_t identifier[3] = {'C', 'O', 'M'};
+	uint8_t identifier[3] = {'C', 'O', 'M'};
 
-    //see more languages in: https://www.loc.gov/standards/iso639-2/php/code_list.php
+	//see more languages in: https://www.loc.gov/standards/iso639-2/php/code_list.php
 	std::string language = "eng";
 
-    // Construct the frame data including language and comment
-    std::string frameData;
-    frameData += language;
-    frameData += '\0'; // Null separator
-    frameData += comment;
+	// Construct the frame data including language and comment
+	std::string frameData;
+	frameData += language;
+	frameData += '\0'; // Null separator
+	frameData += comment;
 
-    setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
 
@@ -263,27 +239,27 @@ void ID3v20::setTrack(uint8_t track){
 }
 
 ID3v10::Genre ID3v20::getGenre() const{
-    uint8_t identifier[3] = {'T', 'C', 'O'};
-    ID3v20Frame* frame = getFrame(identifier);
+	uint8_t identifier[3] = {'T', 'C', 'O'};
+	ID3v20Frame* frame = getFrame(identifier);
 
-    if(frame != nullptr){
-        std::string genreString(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
-        if(genreString.front() == '(' && genreString.back() == ')'){
-        	genreString = genreString.substr(1, genreString.size() - 2);
-        }
+	if(frame != nullptr){
+		std::string genreString(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		if(genreString.front() == '(' && genreString.back() == ')'){
+			genreString = genreString.substr(1, genreString.size() - 2);
+		}
 
-        int genreValue = std::stoi(genreString);
+		int genreValue = std::stoi(genreString);
 		if(genreValue >= 0 && genreValue <= ID3v10::HardRock){
 			return static_cast<ID3v10::Genre>(genreValue);
 		}
-    }
+	}
 
-    return ID3v10::Genre::Other;
+return ID3v10::Genre::Other;
 }
 
 void ID3v20::setGenre(ID3v10::Genre genre){
-    uint8_t identifier[3] = {'T', 'C', 'O'};
+	uint8_t identifier[3] = {'T', 'C', 'O'};
 
-    std::string genreString = "(" + std::to_string(static_cast<int>(genre)) + ")";
+	std::string genreString = "(" + std::to_string(static_cast<int>(genre)) + ")";
 	setFrame(identifier, genreString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(genreString.c_str())));
 }

@@ -58,7 +58,7 @@ void ID3v11::setYear(const std::string& year){
 }
 
 std::string ID3v11::getComment() const{
-	return reinterpret_cast<const char*>(data.comment);
+	return std::string(reinterpret_cast<const char*>(data.comment));
 }
 
 void ID3v11::setComment(const std::string& comment){
