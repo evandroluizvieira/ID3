@@ -71,19 +71,18 @@ ID3v20Frame::~ID3v20Frame(){
 	}
 }
 
-ID3v20::ID3v20() :
-	header(){
-
+ID3v20::ID3v20(){
+	header = {};
 }
 
 ID3v20::~ID3v20(){
-	header = {};
-
 	for(auto& frame : frames){
 		delete frame;
 		frame = nullptr;
 	}
 	frames.clear();
+
+	header = {};
 }
 
 ID3v20Frame* ID3v20::getFrame(uint8_t identifier[3]) const{
@@ -112,6 +111,20 @@ void ID3v20::setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data){
 	frame->header.setFrameSize(size);
 
 	frames.push_back(frame);
+}
+
+void ID3v20::removeFrame(uint8_t identifier[3]){
+	for (auto it = frames.begin(); it != frames.end(); ){
+		ID3v20Frame* frame = *it;
+
+		if(std::memcmp(frame->header.identifier, identifier, 3) == 0){
+			delete frame;
+			it = frames.erase(it);
+			return;
+		}else{
+			++it;
+		}
+	}
 }
 
 std::string ID3v20::getTitle() const{
@@ -254,7 +267,7 @@ ID3v10::Genre ID3v20::getGenre() const{
 		}
 	}
 
-return ID3v10::Genre::Other;
+	return ID3v10::Genre::Other;
 }
 
 void ID3v20::setGenre(ID3v10::Genre genre){

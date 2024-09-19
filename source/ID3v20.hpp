@@ -173,6 +173,13 @@ class ID3v20{
 		void setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data);
 
 		/**
+		 * @brief Removes the first frame with the specified identifier from the tag.
+		 *
+		 * @param identifier A 3 byte array representing the identifier of the frame.
+		 */
+		void removeFrame(uint8_t identifier[3]);
+
+		/**
 		 * @brief Retrieves the title from the tag.
 		 *
 		 * @return Copy of the title string if found, otherwise an empty string.

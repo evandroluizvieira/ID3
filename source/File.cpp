@@ -14,7 +14,7 @@ File::~File(){
 
 void File::clear(){
 	if(data != nullptr){
-		delete data;
+		delete[] data;
 		data = nullptr;
 	}
 	size = 0;
@@ -46,21 +46,30 @@ bool File::load(const char *filename){
 		return false;
 	}
 
-	char *buffer = nullptr;
-	long long size = 0;
-	size = file.tellg();
-	file.seekg(0, std::ios::beg);
-	buffer = new char[static_cast<unsigned long long>(size)];
-	file.read(buffer, size);
-	file.close();
+	std::streamsize fileSize = file.tellg();
+	if(fileSize <= 0){
+		return false;
+	}
 
-	this->data = reinterpret_cast<uint8_t*>(buffer);
-	this->size = static_cast<uint64_t>(size);
+	file.seekg(0, std::ios::beg);
+	if(file.fail() == true){
+		return false;
+	}
+
+	data = new uint8_t[static_cast<std::size_t>(fileSize)];
+
+	file.read(reinterpret_cast<char*>(data), fileSize);
+	if(file.fail() == true){
+		clear();
+		return false;
+	}
+
+	size = static_cast<uint64_t>(fileSize);
 
 	return true;
 }
 
-bool File::save(const char *filename){
+bool File::save(const char* filename){
 	if(isEmpty() == true){
 		return false;
 	}
@@ -71,7 +80,10 @@ bool File::save(const char *filename){
 	}
 
 	file.write(reinterpret_cast<const char*>(data), static_cast<std::streamsize>(size));
-	file.close();
+	if(file.fail() == true){
+		return false;
+	}
 
 	return true;
 }
+
