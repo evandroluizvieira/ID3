@@ -13,7 +13,11 @@
  * @brief This file contains the definition of the class ID3v23 and class ID3v23Header.
  */
 
+#include "ID3v10.hpp"
 #include "ID3v2.hpp"
+
+#include <string>
+#include <vector>
 
 /**
  * @class ID3v23Header
@@ -62,11 +66,245 @@ class ID3v23Header : public ID3v2HeaderBase{
 };
 
 /**
+ * @class ID3v23ExtendedHeader
+ *
+ * @brief Represents the ID3v2.3 extended header.
+ */
+class ID3v23ExtendedHeader{
+	public:
+		/**
+		 * @brief Default constructor initializing the extended header.
+		 */
+		ID3v23ExtendedHeader();
+
+		/**
+		 * @brief Destructor for the extended header.
+		 */
+		~ID3v23ExtendedHeader();
+
+		/**
+		 * @brief Set the extended header size.
+		 *
+		 * @param size The size of the extended header excluding itself.
+		 */
+		void setExtendedHeaderSize(uint32_t size);
+
+		/**
+		 * @brief Get the extended header size.
+		 *
+		 * @return The size of the extended header excluding itself.
+		 */
+		uint32_t getExtendedHeaderSize() const;
+
+		/**
+		 * @brief Set the extended flags.
+		 *
+		 * @param flags The extended flags to set.
+		 */
+		void setExtendedFlags(uint16_t flags);
+
+		/**
+		 * @brief Get the extended flags.
+		 *
+		 * @return The extended flags.
+		 */
+		uint16_t getExtendedFlags() const;
+
+		/**
+		 * @brief Set the size of padding.
+		 *
+		 * @param size The size of padding.
+		 */
+		void setPaddingSize(uint32_t size);
+
+		/**
+		 * @brief Get the size of padding.
+		 *
+		 * @return The size of padding.
+		 */
+		uint32_t getPaddingSize() const;
+
+	private:
+		uint32_t size;
+		uint16_t flags;
+		uint32_t padding;
+};
+
+/**
+ * @class ID3v23FrameHeader
+ *
+ * @brief Represents the header structure for an ID3v2.3 frame header that contains 4 bytes identifier of the frame, 4 bytes size of the frame, and 2 bytes flags.
+ */
+class ID3v23FrameHeader{
+	public:
+		/**
+		 * @brief Default constructor that initializes the object with clear data.
+		 */
+		ID3v23FrameHeader();
+
+		/**
+		 * @brief Default virtual destructor.
+		 */
+		virtual ~ID3v23FrameHeader();
+
+		/**
+		 * @brief Retrieves the size of the frame excluding the header.
+		 *
+		 * @return The size of the frame.
+		 */
+		uint32_t getFrameSize() const;
+
+		/**
+		 * @brief Sets the size of the frame excluding the header.
+		 *
+		 * @param size The new size of the frame.
+		 */
+		void setFrameSize(uint32_t size);
+
+		/**
+		 * @brief Set the tag alter preservation flag.
+		 *
+		 * @param preserve Whether to set or clear the flag.
+		 */
+		void setTagAlterPreservation(bool preserve);
+
+		/**
+		 * @brief Check if the tag alter preservation flag is set.
+		 *
+		 * @return true if the flag is set, false otherwise.
+		 */
+		bool getTagAlterPreservation() const;
+
+		/**
+		 * @brief Set the file alter preservation flag.
+		 *
+		 * @param preserve Whether to set or clear the flag.
+		 */
+		void setFileAlterPreservation(bool preserve);
+
+		/**
+		 * @brief Check if the file alter preservation flag is set.
+		 *
+		 * @return true if the flag is set, false otherwise.
+		 */
+		bool getFileAlterPreservation() const;
+
+		/**
+		 * @brief Set the read-only flag.
+		 *
+		 * @param readOnly Whether to set or clear the flag.
+		 */
+		void setReadOnly(bool readOnly);
+
+		/**
+		 * @brief Check if the read-only flag is set.
+		 *
+		 * @return true if the flag is set, false otherwise.
+		 */
+		bool isReadOnly() const;
+
+		/**
+		 * @brief Set the compression flag.
+		 *
+		 * @param compressed Whether to set or clear the flag.
+		 */
+		void setCompressed(bool compressed);
+
+		/**
+		 * @brief Check if the compression flag is set.
+		 *
+		 * @return true if the flag is set, false otherwise.
+		 */
+		bool isCompressed() const;
+
+		/**
+		 * @brief Set the encryption flag.
+		 *
+		 * @param encrypted Whether to set or clear the flag.
+		 */
+		void setEncrypted(bool encrypted);
+
+		/**
+		 * @brief Check if the encryption flag is set.
+		 *
+		 * @return true if the flag is set, false otherwise.
+		 */
+		bool isEncrypted() const;
+
+		/**
+		 * @brief Set the grouping identity flag.
+		 *
+		 * @param group Whether to set or clear the flag.
+		 */
+		void setGroupingIdentity(bool group);
+
+		/**
+		 * @brief Check if the grouping identity flag is set.
+		 *
+		 * @return true if the flag is set, false otherwise.
+		 */
+		bool isGroupingIdentity() const;
+
+	public:
+		/**
+		 * @var uint8_t ID3v23FrameHeader::identifier[4]
+		 *
+		 * @brief 4 character identifier for the frame type.
+		 */
+		uint8_t identifier[4];
+
+		/**
+		 * @var uint8_t ID3v23FrameHeader::size[4]
+		 *
+		 * @brief 4 byte size descriptor for the frame.
+		 */
+		uint8_t size[4];
+
+		/**
+		 * @var uint8_t ID3v23FrameHeader::flags[2]
+		 *
+		 * @brief 2 byte flags for the frame.
+		 */
+		uint8_t flags[2];
+};
+
+/**
+ * @struct ID3v23Frame
+ *
+ * @brief Structure representing an ID3v2.3 frame, consisting of a header and data.
+ */
+struct ID3v23Frame {
+    /**
+     * @brief Default constructor that initializes the object with clear data.
+     */
+    ID3v23Frame();
+
+    /**
+     * @brief Default virtual destructor that releases ID3v23Frame::data if has any and clear ID3v23Frame::header.
+     */
+    virtual ~ID3v23Frame();
+
+    /**
+     * @var ID3v23FrameHeader ID3v23Frame::header
+     *
+     * @brief Header of the ID3v2.3 frame.
+     */
+    ID3v23FrameHeader header;
+
+    /**
+     * @var uint8_t* ID3v23Frame::data
+     *
+     * @brief Pointer to the data of the ID3v2.3 frame.
+     *
+     * @note This pointer may point to dynamically allocated memory for frame data.
+     */
+    uint8_t* data;
+};
+
+/**
  * @class ID3v23
  *
  * @brief ID3 tag version 2.3 class that holds information in ID3v23Header class.
- *
- * @note Not Completed.
  */
 class ID3v23{
 	public:
@@ -80,6 +318,129 @@ class ID3v23{
 		 */
 		virtual ~ID3v23();
 
+		/**
+		 * @brief Search through the vector of frames to find a frame with the given identifier.
+		 *
+		 * @param identifier A 4 byte array representing the identifier of the frame.
+		 *
+		 * @return A pointer to the first ID3v23Frame if found, otherwise nullptr.
+		 */
+		ID3v23Frame* getFrame(uint8_t identifier[4]) const;
+
+		/**
+		 * @brief Updates an existing frame identified by its identifier with new data, or creates a new frame if none with the same identifier exists.
+		 *
+		 * @param identifier A 4 byte array representing the identifier of the frame.
+		 * @param size The size of the data to be set in the frame, in bytes.
+		 * @param data Pointer to the data to be copied into the frame.
+		 */
+		void setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+
+		/**
+		 * @brief Removes a specified frame from the tag.
+		 *
+		 * @param frame Pointer to the ID3v23Frame object to be removed from the tag.
+		 */
+		void removeFrame(ID3v23Frame* frame);
+
+		/**
+		 * @brief Retrieves the title from the tag.
+		 *
+		 * @return Copy of the title string if found, otherwise an empty string.
+		 */
+		std::string getTitle() const;
+
+		/**
+		 * @brief Sets the title in the tag.
+		 *
+		 * @param title The title to set.
+		 */
+		void setTitle(const std::string& title);
+
+		/**
+		 * @brief Retrieves the artist from the tag.
+		 *
+		 * @return Copy of the artist string if found, otherwise an empty string.
+		 */
+		std::string getArtist() const;
+
+		/**
+		 * @brief Sets the artist in the tag.
+		 *
+		 * @param artist The new artist to be set.
+		 */
+		void setArtist(const std::string& artist);
+
+		/**
+		 * @brief Retrieves the album from the tag.
+		 *
+		 * @return Copy of the album string if found, otherwise an empty string.
+		 */
+		std::string getAlbum() const;
+
+		/**
+		 * @brief Sets the album in the tag.
+		 *
+		 * @param album The new album to be set.
+		 */
+		void setAlbum(const std::string& album);
+
+		/**
+		 * @brief Retrieves the year from the tag.
+		 *
+		 * @return Copy of the year (fixed 4 characters) if found, otherwise an empty string.
+		 */
+		std::string getYear() const;
+
+		/**
+		 * @brief Sets the year in the tag.
+		 *
+		 * @param year The new year to be set (fixed 4 characters).
+		 */
+		void setYear(const std::string& year);
+
+		/**
+		 * @brief Retrieves the comment from the tag.
+		 *
+		 * @return Copy of the comment string if found, otherwise an empty string.
+		 */
+		std::string getComment() const;
+
+		/**
+		 * @brief Sets the comment in the tag.
+		 *
+		 * @param comment The new comment to be set.
+		 */
+		void setComment(const std::string& comment);
+
+		/**
+		 * @brief Retrieves the track number from the tag.
+		 *
+		 * @return The track number if found, otherwise 0.
+		 */
+		uint8_t getTrack() const;
+
+		/**
+		 * @brief Sets the track number in the tag.
+		 *
+		 * @param track The new track number to be set.
+		 */
+		void setTrack(uint8_t track);
+
+		/**
+		 * @brief Retrieves the genre from the tag.
+		 *
+		 * @return The genre as ID3v10::Genre enum if found, otherwise ID3v10::Genre::Other.
+		 */
+		ID3v10::Genre getGenre() const;
+
+		/**
+		 * @brief Sets the genre in the ID3v2.0 tag.
+		 *
+		 * @param genre The new genre to be set as ID3v10::Genre enum.
+		 */
+		void setGenre(ID3v10::Genre genre);
+
 	public:
 		/**
 		 * @var ID3v23Header ID3v23::header
@@ -87,6 +448,24 @@ class ID3v23{
 		 * @brief Class that holds ID3 version 2.3 fields of header data.
 		 */
 		ID3v23Header header;
+
+	    /**
+	     * @var ID3v23ExtendedHeader* ID3v23::extendedHeader
+	     *
+	     * @brief Pointer to the extended header, if present. This can be null if the tag does not have an extended header.
+	     *
+	     * @note The extended header is dynamically allocated and managed.
+	     */
+		ID3v23ExtendedHeader* extendedHeader;
+
+		/**
+		 * @var std::vector<ID3v23Frame*> ID3v23::frames
+		 *
+		 * @brief Vector containing pointers to ID3v2.3 frames.
+		 *
+		 * @note Frames are dynamically allocated and managed.
+		 */
+		std::vector<ID3v23Frame*> frames;
 };
 
 #endif /* ID3V23_HPP */
