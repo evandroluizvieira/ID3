@@ -1,0 +1,53 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Full Process Pipeline",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/build/id3_full_process.exe \"Z:/Mp3/Músicas/Accept/1979 - Accept\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: id3_full_process"
+        },
+        {
+            "name": "Run ID3 Scanner",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/build/id3_scan_id3.exe \"Z:/Mp3/Músicas/Accept/1979 - Accept\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: id3_scan_id3"
+        },
+        {
+            "name": "Remove ID3v1 Tags",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/build/id3_remove_id3v1.exe \"Z:/Mp3/Músicas/Accept/1979 - Accept\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: id3_remove_id3v1"
+        },
+        {
+            "name": "Remove ID3v2 Tags",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/build/id3_remove_id3v2.exe \"Z:/Mp3/Músicas/Accept/1979 - Accept - No ID3v1\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: id3_remove_id3v2"
+        },
+        {
+            "name": "Convert ID3v2 to ID3v1",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/build/id3_convert_v2_to_v1.exe \"Z:/Mp3/Músicas/Accept/1979 - Accept\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: id3_convert_v2_to_v1"
+        },
+        {
+            "name": "Convert ID3v1 to ID3v2",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/build/id3_convert_v1_to_v2.exe \"Z:/Mp3/Músicas/Accept/1979 - Accept\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: id3_convert_v1_to_v2"
+        }
+    ]
+}
