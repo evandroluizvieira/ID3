@@ -95,34 +95,26 @@ ID3v20Frame* ID3v20::getFrame(uint8_t identifier[3]) const{
 }
 
 void ID3v20::setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data){
-	ID3v20Frame* frame = getFrame(identifier);
-
-	if(frame == nullptr){
-		frame = new ID3v20Frame();
+	if(size == 0 || data == nullptr){
+		return;
 	}
 
-	if(frame->data != nullptr){
-		delete[] frame->data;
-	}
+	ID3v20Frame* frame = new ID3v20Frame();
+	std::memcpy(frame->header.identifier, identifier, 3);
+	frame->header.setFrameSize(size);
 
 	frame->data = new uint8_t[size];
 	std::memcpy(frame->data, data, size);
-	std::memcpy(frame->header.identifier, identifier, 3);
-	frame->header.setFrameSize(size);
 
 	frames.push_back(frame);
 }
 
-void ID3v20::removeFrame(uint8_t identifier[3]){
-	for (auto it = frames.begin(); it != frames.end(); ){
-		ID3v20Frame* frame = *it;
-
-		if(std::memcmp(frame->header.identifier, identifier, 3) == 0){
+void ID3v20::removeFrame(ID3v20Frame* frame){
+	for(auto it = frames.begin(); it != frames.end(); ++it){
+		if(*it == frame){
 			delete frame;
-			it = frames.erase(it);
-			return;
-		}else{
-			++it;
+			frames.erase(it);
+			break;
 		}
 	}
 }
@@ -228,7 +220,6 @@ void ID3v20::setComment(const std::string& comment){
 	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
-
 uint8_t ID3v20::getTrack() const{
 	uint8_t identifier[3] = {'T', 'R', 'K'};
 	ID3v20Frame* frame = getFrame(identifier);
@@ -239,7 +230,9 @@ uint8_t ID3v20::getTrack() const{
 		if(slashPosition != std::string::npos){
 			trackString = trackString.substr(0, slashPosition);
 		}
-		return std::stoul(trackString);
+		try{
+			return std::stoul(trackString);
+		}catch(...){}
 	}
 
 	return 0;
