@@ -83,51 +83,43 @@ class ID3v23ExtendedHeader{
 		~ID3v23ExtendedHeader();
 
 		/**
-		 * @brief Set the extended header size.
+		 * @brief Check if the CRC flag is set.
 		 *
-		 * @param size The size of the extended header excluding itself.
+		 * @return true if the flag is set, false otherwise.
 		 */
-		void setExtendedHeaderSize(uint32_t size);
+		bool hasCRC() const;
 
 		/**
-		 * @brief Get the extended header size.
+		 * @brief Set the CRC-32 data.
 		 *
-		 * @return The size of the extended header excluding itself.
+		 * @param value The CRC-32 value to set.
 		 */
-		uint32_t getExtendedHeaderSize() const;
+		void setCRC(uint32_t crcValue);
 
 		/**
-		 * @brief Set the extended flags.
+		 * @brief Get the CRC-32 data.
 		 *
-		 * @param flags The extended flags to set.
+		 * @return The CRC-32 value, or 0 if not present.
 		 */
-		void setExtendedFlags(uint16_t flags);
+		uint32_t getCRC() const;
+
+	    /**
+	     * @brief Remove the CRC-32 data, clearing the CRC flag and deallocates the memory for CRC, if it exists.
+	     */
+	    void removeCRC();
 
 		/**
-		 * @brief Get the extended flags.
+		 * @brief Get the total size of the extended header.
 		 *
-		 * @return The extended flags.
+		 * @return The size of the extended header, including CRC if present.
 		 */
-		uint16_t getExtendedFlags() const;
+		uint32_t getSize() const;
 
-		/**
-		 * @brief Set the size of padding.
-		 *
-		 * @param size The size of padding.
-		 */
-		void setPaddingSize(uint32_t size);
-
-		/**
-		 * @brief Get the size of padding.
-		 *
-		 * @return The size of padding.
-		 */
-		uint32_t getPaddingSize() const;
-
-	private:
+	public:
 		uint32_t size;
 		uint16_t flags;
 		uint32_t padding;
+		uint32_t* crc;
 };
 
 /**
@@ -318,6 +310,8 @@ class ID3v23{
 		 */
 		virtual ~ID3v23();
 
+		void print();
+
 		/**
 		 * @brief Search through the vector of frames to find a frame with the given identifier.
 		 *
@@ -328,13 +322,27 @@ class ID3v23{
 		ID3v23Frame* getFrame(uint8_t identifier[4]) const;
 
 		/**
-		 * @brief Updates an existing frame identified by its identifier with new data, or creates a new frame if none with the same identifier exists.
+		 * @brief Updates the first occurrence of a frame with the given identifier, if present.
+		 *
+		 * If a frame with the given identifier exists, its data is replaced and returns true. If not, does nothing and returns false.
+		 *
+		 * @param identifier A 4 byte array representing the identifier of the frame.
+		 * @param size The size of the data to be set in the frame, in bytes.
+		 * @param data Pointer to the data to be copied into the frame.
+		 * @return true if a frame was found and updated, false otherwise.
+		 */
+		bool setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+
+		/**
+		 * @brief Adds a new frame with the given identifier and data, regardless of existing frames.
+		 *
+		 * This always appends a new frame to the tag, even if other frames with the same identifier exist.
 		 *
 		 * @param identifier A 4 byte array representing the identifier of the frame.
 		 * @param size The size of the data to be set in the frame, in bytes.
 		 * @param data Pointer to the data to be copied into the frame.
 		 */
-		void setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+		void addFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
 
 		/**
 		 * @brief Removes a specified frame from the tag.
@@ -390,14 +398,14 @@ class ID3v23{
 		 *
 		 * @return Copy of the year (fixed 4 characters) if found, otherwise an empty string.
 		 */
-		std::string getYear() const;
+		virtual std::string getYear() const;
 
 		/**
-		 * @brief Sets the year in the tag.
-		 *
-		 * @param year The new year to be set (fixed 4 characters).
-		 */
-		void setYear(const std::string& year);
+		* @brief Sets the year in the tag.
+		*
+		* @param year The new year to be set (fixed 4 characters).
+		*/
+		virtual void setYear(const std::string& year);
 
 		/**
 		 * @brief Retrieves the comment from the tag.
@@ -418,7 +426,7 @@ class ID3v23{
 		 *
 		 * @return The track number if found, otherwise 0.
 		 */
-		uint8_t getTrack() const;
+		std::string getTrack() const;
 
 		/**
 		 * @brief Sets the track number in the tag.
@@ -432,7 +440,7 @@ class ID3v23{
 		 *
 		 * @return The genre as ID3v10::Genre enum if found, otherwise ID3v10::Genre::Other.
 		 */
-		ID3v10::Genre getGenre() const;
+		std::string getGenre() const;
 
 		/**
 		 * @brief Sets the genre in the ID3v2.0 tag.

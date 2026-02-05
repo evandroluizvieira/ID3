@@ -153,13 +153,12 @@ class ID3v20{
 		 */
 		virtual ~ID3v20();
 
-
 		/**
 		 * @brief Search through the vector of frames to find a frame with the given identifier.
 		 *
 		 * @param identifier A 3 byte array representing the identifier of the frame.
 		 *
-		 * @return A pointer to the ID3v20Frame if found, otherwise nullptr.
+		 * @return A pointer to the first ID3v20Frame if found, otherwise nullptr.
 		 */
 		ID3v20Frame* getFrame(uint8_t identifier[3]) const;
 
@@ -173,11 +172,11 @@ class ID3v20{
 		void setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data);
 
 		/**
-		 * @brief Removes the first frame with the specified identifier from the tag.
+		 * @brief Removes a specified frame from the tag.
 		 *
-		 * @param identifier A 3 byte array representing the identifier of the frame.
+		 * @param frame Pointer to the ID3v20Frame object to be removed from the tag.
 		 */
-		void removeFrame(uint8_t identifier[3]);
+		void removeFrame(ID3v20Frame* frame);
 
 		/**
 		 * @brief Retrieves the title from the tag.

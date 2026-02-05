@@ -36,37 +36,51 @@ bool ID3v23Header::isExperimental() const{
 }
 
 ID3v23ExtendedHeader::ID3v23ExtendedHeader() :
-	size(0), flags(0), padding(0){
+	size(0), flags(0), padding(0), crc(nullptr){
 
 }
 
 ID3v23ExtendedHeader::~ID3v23ExtendedHeader(){
-
+	size = 0;
+	flags = 0;
+	padding = 0;
+	removeCRC();
 }
 
-void ID3v23ExtendedHeader::setExtendedHeaderSize(uint32_t size){
-	this->size = size;
+bool ID3v23ExtendedHeader::hasCRC() const{
+	return flags & 0x8000;
 }
 
-uint32_t ID3v23ExtendedHeader::getExtendedHeaderSize() const{
+void ID3v23ExtendedHeader::setCRC(uint32_t crcValue){
+	if(crc == nullptr){
+		crc = new uint32_t;
+	}
+	flags |= 0x8000;
+	*crc = crcValue;
+}
+
+uint32_t ID3v23ExtendedHeader::getCRC() const{
+	if(hasCRC() == true && crc != nullptr){
+		return *crc;
+	}
+	return 0;
+}
+
+void ID3v23ExtendedHeader::removeCRC(){
+	flags &= ~0x8000;
+	if (crc != nullptr){
+		delete crc;
+		crc = nullptr;
+	}
+}
+
+uint32_t ID3v23ExtendedHeader::getSize() const{
+	if(hasCRC() == true){
+		uint32_t sizeOfCRC = 4;
+		return size + sizeOfCRC;
+	}
+
 	return size;
-}
-
-void ID3v23ExtendedHeader::setExtendedFlags(uint16_t flags){
-	this->flags = flags;
-}
-
-uint16_t ID3v23ExtendedHeader::getExtendedFlags() const {
-    return flags;
-}
-
-void ID3v23ExtendedHeader::setPaddingSize(uint32_t size){
-	this->padding = size;
-}
-
-
-uint32_t ID3v23ExtendedHeader::getPaddingSize() const{
-	return padding;
 }
 
 ID3v23FrameHeader::ID3v23FrameHeader() :
@@ -207,6 +221,45 @@ ID3v23::~ID3v23(){
 	}
 
 	header = {};
+
+	extendedHeader = {};
+}
+
+#include <iostream>
+using std::cout;
+using std::endl;
+
+void ID3v23::print(){
+	cout << "header.getTagSize()        " << header.getTagSize() << endl;
+	cout << "header.isUnsynchronized()  " << header.isUnsynchronized() << endl;
+	cout << "header.isExperimental()    " << header.isExperimental() << endl;
+	cout << "header.hasExtendedHeader() " << header.hasExtendedHeader() << endl;
+	if(header.hasExtendedHeader()){
+		cout << "header.hasExtendedHeader() " << extendedHeader->hasCRC() << endl;
+		cout << "header.hasExtendedHeader() " << extendedHeader->getCRC() << endl;
+		cout << "header.hasExtendedHeader() " << extendedHeader->getSize() << endl;
+	}
+
+	int i = 0;
+	for(auto frame : frames){
+		cout << "frame " << i << endl;
+		i++;
+		cout << "'" << frame->header.identifier[0] << "', ";
+		cout << "'" << frame->header.identifier[1] << "', ";
+		cout << "'" << frame->header.identifier[2] << "', ";
+		cout << "'" << frame->header.identifier[3] << "'" << endl;
+
+		cout << "header.getFrameSize()             " << frame->header.getFrameSize() << endl;
+		cout << "header.getTagAlterPreservation()  " << frame->header.getTagAlterPreservation() << endl;
+		cout << "header.getFileAlterPreservation() " << frame->header.getFileAlterPreservation() << endl;
+		cout << "header.isReadOnly()               " << frame->header.isReadOnly() << endl;
+		cout << "header.isCompressed()             " << frame->header.isCompressed() << endl;
+		cout << "header.isEncrypted()              " << frame->header.isEncrypted() << endl;
+		cout << "header.isGroupingIdentity()       " << frame->header.isGroupingIdentity() << endl;
+
+		//cout << "frame->data " << std::string((char*)frame->data, frame->header.getFrameSize()) << endl;
+		cout << endl;
+	}
 }
 
 ID3v23Frame* ID3v23::getFrame(uint8_t identifier[4]) const {
@@ -218,18 +271,32 @@ ID3v23Frame* ID3v23::getFrame(uint8_t identifier[4]) const {
 	return nullptr;
 }
 
-void ID3v23::setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data){
+bool ID3v23::setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data){
+	if(size == 0 || data == nullptr){
+		return false;
+	}
+
+	for(auto& frame : frames){
+		if(std::memcmp(frame->header.identifier, identifier, 4) == 0){
+			delete[] frame->data;
+			frame->data = new uint8_t[size];
+			std::memcpy(frame->data, data, size);
+			frame->header.setFrameSize(size);
+			return true;
+		}
+	}
+	return false;
+}
+
+void ID3v23::addFrame(uint8_t identifier[4], uint32_t size, uint8_t* data){
 	if(size == 0 || data == nullptr){
 		return;
 	}
-
 	ID3v23Frame* frame = new ID3v23Frame();
 	std::memcpy(frame->header.identifier, identifier, 4);
 	frame->header.setFrameSize(size);
-
 	frame->data = new uint8_t[size];
 	std::memcpy(frame->data, data, size);
-
 	frames.push_back(frame);
 }
 
@@ -288,8 +355,8 @@ void ID3v23::setAlbum(const std::string& title){
 std::string ID3v23::getYear() const{
 	uint8_t identifier[4] = {'T', 'Y', 'E', 'R'};
 	ID3v23Frame* frame = getFrame(identifier);
-	if(frame != nullptr && frame->header.getFrameSize() == 4){
-		return std::string(reinterpret_cast<char*>(frame->data), 4);
+	if(frame != nullptr){
+		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
 	}
 	return "";
 }
@@ -304,39 +371,9 @@ void ID3v23::setYear(const std::string& year){
 std::string ID3v23::getComment() const{
 	uint8_t identifier[4] = {'C', 'O', 'M', 'M'};
 	ID3v23Frame* frame = getFrame(identifier);
-
 	if(frame != nullptr){
-		// Convert the frame data to a string
-		std::string frameData(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
-
-		// Read the encoding byte
-		uint8_t encoding = static_cast<uint8_t>(frameData[0]);
-		size_t pos = 1;
-
-		// Extract the 3-byte language field
-		std::string language = frameData.substr(pos, 3);
-		pos += 3;
-
-		// Extract the short content description (terminated by a null byte)
-		size_t shortDescPos = frameData.find('\0', pos);
-		if(shortDescPos == std::string::npos){
-			return "";
-		}
-
-		// Move to the actual comment
-		pos = shortDescPos + 1;
-
-		if(encoding == 0x00){
-			// ISO-8859-1 encoding...
-
-			// Now extract the actual comment text
-			std::string comment = frameData.substr(pos);
-			return comment;
-		}else if(encoding == 0x01){
-			// UTF-16 encoding...
-		}
+		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
 	}
-
 	return "";
 }
 
@@ -366,30 +403,13 @@ void ID3v23::setComment(const std::string& comment){
 	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
-uint8_t ID3v23::getTrack() const{
+std::string ID3v23::getTrack() const{
 	uint8_t identifier[4] = {'T', 'R', 'C', 'K'};
 	ID3v23Frame* frame = getFrame(identifier);
-
 	if(frame != nullptr){
-		// Convert frame data to string
-		std::string trackString(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
-
-		// Find the '/' indicating the total number of tracks (if present)
-		size_t slashPosition = trackString.find('/');
-
-		// Extract the track number part
-		if (slashPosition != std::string::npos){
-			// Only keep the part before '/'
-			trackString = trackString.substr(0, slashPosition);
-		}
-
-		// Safely convert the string to an integer and return the track number
-		try{
-			return std::stoul(trackString);
-		}catch(...){}
+		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
 	}
-
-	return 0;
+	return "";
 }
 
 void ID3v23::setTrack(uint8_t track){
@@ -402,32 +422,13 @@ void ID3v23::setTrack(uint8_t track){
 	setFrame(identifier, trackStr.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(trackStr.c_str())));
 }
 
-ID3v10::Genre ID3v23::getGenre() const{
+std::string ID3v23::getGenre() const{
 	uint8_t identifier[4] = {'T', 'C', 'O', 'N'};
 	ID3v23Frame* frame = getFrame(identifier);
-
-	if (frame && frame->header.getFrameSize() > 0){
-		// Convert frame data to string
-		std::string genreString(reinterpret_cast<const char*>(frame->data), frame->header.getFrameSize());
-
-		if(genreString.empty() == false){
-			// Find the start and end of the genre code
-			size_t start = genreString.find('(');
-			if(start != std::string::npos){
-				size_t end = genreString.find(')', start);
-				if(end != std::string::npos && end > start + 1){
-					std::string genreCode = genreString.substr(start + 1, end - start - 1);
-					try{
-						int genreValue = std::stoi(genreCode);
-						if(genreValue >= 0 && genreValue <= 79){
-							return static_cast<ID3v10::Genre>(genreValue);
-						}
-					}catch(...){}
-				}
-			}
-		}
+	if(frame != nullptr){
+		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
 	}
-	return ID3v10::Other;
+	return "";
 }
 
 
