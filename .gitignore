@@ -1,0 +1,10 @@
+/.cproject
+/.gitignore
+/.project
+/.settings/
+/Main.cpp
+/Debug/
+/Release/
+/test/
+/build/
+/tools/
