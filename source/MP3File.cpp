@@ -126,7 +126,7 @@ ID3 MP3File::getID3() const{
 
 			id3.v2.v20 = v20;
 
-			uint32_t tagSize = v20->header.getSize();
+		uint32_t tagSize = v20->header.getTagSize();
 
 			// Determine the position where frames start after the header
 			uint32_t headerBaseSize = sizeof(ID3v2HeaderBase);

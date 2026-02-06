@@ -36,7 +36,6 @@ void ID3v2HeaderBase::setUnsynchronized(bool useUnsynchronization){
 uint32_t ID3v2HeaderBase::getTagSize() const{
 	uint32_t size = 0;
 
-	// Masking the highest bit of each byte
 	size |= static_cast<uint32_t>(this->size[0] & 0x7F) << 21;
 	size |= static_cast<uint32_t>(this->size[1] & 0x7F) << 14;
 	size |= static_cast<uint32_t>(this->size[2] & 0x7F) << 7;
@@ -46,7 +45,6 @@ uint32_t ID3v2HeaderBase::getTagSize() const{
 }
 
 void ID3v2HeaderBase::setTagSize(uint32_t size){
-	//Ensure size fits within the 28-bit limit
 	if(size > 0x0FFFFFFF){
 		size = 0x0FFFFFFF;
 	}

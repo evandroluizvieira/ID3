@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 MP3::MP3() : frames() {
-	// Empty constructor
 }
 
 MP3::~MP3() {

@@ -3,7 +3,7 @@
  * @brief Convert ID3v1.0 tags to ID3v2.4 tags
  */
 
-#include "../source/MP3File.hpp"
+#include <MP3File>
 #include <iostream>
 #include <filesystem>
 #include <string>

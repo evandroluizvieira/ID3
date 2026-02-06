@@ -53,9 +53,26 @@ g++ -std=c++17 -O2 -DNDEBUG \
 
 ## Library Usage
 
+### Including the Library
+
+The library provides header files without extension in the `include/` directory for easy integration:
+
+```cpp
+#include <ID3>        // Include everything
+#include <MP3File>    // Include only MP3File
+#include <ID3v1>      // Include only ID3v1 tags
+#include <ID3v2>      // Include only ID3v2 tags
+```
+
+When compiling, add the include directory to your compiler's include path:
+
+```bash
+g++ -I/path/to/ID3/include your_program.cpp -o your_program
+```
+
 ### Basic Tag Reading
 ```cpp
-#include "MP3File.hpp"
+#include <MP3File>
 
 MP3File mp3;
 mp3.load("song.mp3");
@@ -158,7 +175,7 @@ id3_convert_v11_to_v23.exe "C:\Music\My Album"
 ## Project Structure
 ```
 ID3/
-├── source/           # Library source files
+├── source/           # Library source files (.cpp/.hpp)
 │   ├── File.cpp/hpp          # Binary file manipulation
 │   ├── MP3File.cpp/hpp       # MP3 file I/O and tag handling
 │   ├── MP3.cpp/hpp           # MP3 structure analysis
@@ -172,12 +189,40 @@ ID3/
 │   ├── ID3v20.cpp/hpp        # ID3 version 2.0
 │   ├── ID3v23.cpp/hpp        # ID3 version 2.3
 │   └── ID3v24.cpp/hpp        # ID3 version 2.4
+├── include/          # Public API headers (without extension)
+│   ├── ID3               # Main include (includes everything)
+│   ├── File              # File class header
+│   ├── MP3File           # MP3File class header
+│   ├── ID3v1             # ID3v1 union header
+│   ├── ID3v2             # ID3v2 union header
+│   └── ...               # Other class headers
 ├── application/      # Command-line tools (16 applications)
-├── include/          # Public API headers
 ├── test/             # Unit tests (Google Test)
 ├── .vscode/          # VS Code build/debug configurations
+├── Doxyfile          # Doxygen configuration for documentation
 └── README.md
 ```
+
+## Documentation
+
+The library includes comprehensive Doxygen-style documentation in all source files.
+
+### Generate Documentation
+
+To generate HTML documentation using Doxygen:
+
+```bash
+doxygen Doxyfile
+```
+
+The generated documentation will be available in the `docs/html/` directory. Open `docs/html/index.html` in your browser to browse the API reference.
+
+### Documentation Features
+- Complete API reference for all classes and functions
+- Parameter descriptions and return values
+- Code examples and usage patterns
+- Class diagrams and inheritance trees
+- Cross-referenced source code browsing
 
 ## Technical Details
 

@@ -3,7 +3,6 @@
 #include <cstring>
 
 MP3Frame::MP3Frame() : header(), audioData() {
-	// Empty constructor
 }
 
 MP3Frame::MP3Frame(const MP3FrameHeader& header, const uint8_t* frameData, uint16_t dataSize)
@@ -72,7 +71,6 @@ double MP3Frame::getFrameDurationMs() const {
 		return 0.0;
 	}
 
-	// MP3 frames contain 1152 samples
 	double durationMs = (1152.0 / sampleRate) * 1000.0;
 	return durationMs;
 }

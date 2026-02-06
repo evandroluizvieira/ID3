@@ -2,63 +2,37 @@
 
 #include <cstring>
 
-// Bitrate table (kbps): [MPEG version][Layer][bitrate index]
 static const uint16_t BITRATE_TABLE[4][3][16] = {
-	// MPEG2.5
 	{
-		// Layer I (not typical for MP3)
 		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
-		// Layer II
-		{0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0},
-		// Layer III
-		{0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0}
 	},
-	// Reserved
 	{
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	},
-	// MPEG2
 	{
-		// Layer I
 		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
-		// Layer II
-		{0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0},
-		// Layer III
-		{0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0}
 	},
-	// MPEG1
 	{
-		// Layer I
 		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
-		// Layer II
 		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
-		// Layer III (most common)
 		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0}
 	}
 };
 
-// Sample rate table (Hz): [MPEG version][sample rate index]
 static const uint32_t SAMPLE_RATE_TABLE[4][4] = {
-	// MPEG2.5
 	{11025, 12000, 8000, 0},
-	// Reserved
 	{0, 0, 0, 0},
-	// MPEG2
 	{22050, 24000, 16000, 0},
-	// MPEG1
 	{44100, 48000, 32000, 0}
 };
 
 MP3FrameHeader::MP3FrameHeader() {
 	std::memset(&data, 0, sizeof(MP3FrameHeaderData));
-	// Initialize with a valid MPEG1 Layer III header (0xFFFB)
 	data.data[0] = 0xFF;
 	data.data[1] = 0xFB;
-	// Bitrate index 9 (128 kbps) + Sample rate 0 (44.1 kHz)
 	data.data[2] = (9 << 4) | 0;
-	// Padding = 0, Private = 0
 	data.data[3] = 0;
 }
 
@@ -67,7 +41,6 @@ MP3FrameHeader::~MP3FrameHeader() {
 }
 
 bool MP3FrameHeader::isValidSync() const {
-	// Sync word is the first 11 bits (0xFFF)
 	return (data.data[0] == 0xFF) && ((data.data[1] & 0xE0) == 0xE0);
 }
 
