@@ -23,7 +23,7 @@
  *       - 4-byte header (MP3FrameHeader)
  *       - Audio data (variable size depending on bitrate and sample rate)
  */
-class MP3Frame {
+class ID3_API MP3Frame {
 	public:
 		/**
 		 * @brief Default constructor that initializes an empty frame.

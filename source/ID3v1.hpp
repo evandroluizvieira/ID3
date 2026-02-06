@@ -22,7 +22,7 @@
  * @see ID3v10 specification in https://id3.org/ID3v1
  * @see ID3v11 specification in https://id3.org/ID3v1
  */
-union ID3v1{
+union ID3_API ID3v1{
 	public:
 		/**
 		 * @brief Default constructor that ensures all members are cleared.

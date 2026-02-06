@@ -1,0 +1,123 @@
+name: Build Libraries
+
+on:
+  push:
+    branches:
+      - master
+      - feature/library-build
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-ninja
+    
+    - name: Build libraries
+      shell: msys2 {0}
+      run: |
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+        ls -lh build/*.a build/*.dll 2>/dev/null || true
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: id3-library-windows-x64
+        path: |
+          build/libID3.a
+          build/ID3.dll
+          build/libID3.dll.a
+          include/
+
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential g++ cmake ninja-build
+    
+    - name: Build libraries
+      run: |
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+        ls -lh build/*.a build/*.so 2>/dev/null || true
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: id3-library-linux-x64
+        path: |
+          build/libID3.a
+          build/libID3.so
+          include/
+
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        brew install cmake ninja
+    
+    - name: Build libraries
+      run: |
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+        ls -lh build/*.a build/*.dylib 2>/dev/null || true
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: id3-library-macos-arm64
+        path: |
+          build/libID3.a
+          build/libID3.dylib
+          include/
+
+  create-release:
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+    
+    - name: Create release archives
+      run: |
+        cd id3-library-windows-x64 && zip -r ../id3-library-windows-x64.zip . && cd ..
+        cd id3-library-linux-x64 && tar czf ../id3-library-linux-x64.tar.gz . && cd ..
+        cd id3-library-macos-arm64 && tar czf ../id3-library-macos-arm64.tar.gz . && cd ..
+    
+    - name: Upload release archives
+      uses: actions/upload-artifact@v4
+      with:
+        name: id3-library-releases
+        path: |
+          id3-library-windows-x64.zip
+          id3-library-linux-x64.tar.gz
+          id3-library-macos-arm64.tar.gz

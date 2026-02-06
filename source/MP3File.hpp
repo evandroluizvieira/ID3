@@ -15,7 +15,7 @@
 /**
  * @brief MP3 file class that holds loaded ID3 tags and/or mp3 data.
  */
-class MP3File : public File{
+class ID3_API MP3File : public File{
 	public:
 		/**
 		 * @brief Default constructor.

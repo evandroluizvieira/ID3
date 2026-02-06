@@ -24,7 +24,7 @@ class ID3v24;
  * @see ID3v23Header
  * @see ID3v24Header
  */
-class ID3v2HeaderBase{
+class ID3_API ID3v2HeaderBase{
 	public:
 		/**
 		 * @brief Default constructor that starts the ID3v2HeaderBase::tag with "ID3" and ensures other members are cleared.
@@ -120,7 +120,7 @@ class ID3v2HeaderBase{
  * @see ID3v23 specification in https://id3.org/d3v2.3.0
  * @see ID3v24 specification in https://id3.org/id3v2.4.0-structure
  */
-union ID3v2{
+union ID3_API ID3v2{
 	public:
 		/**
 		 * @brief Default constructor that ensures all members are cleared.

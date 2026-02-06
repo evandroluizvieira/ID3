@@ -9,12 +9,13 @@
  * @brief This file contains the definition of the class File.
  */
 
+#include "ID3Export.h"
 #include <cstdint>
 
 /**
  * @brief File class that holds binary data.
  */
-class File{
+class ID3_API File{
 	friend class MP3File;
 
 	public:
