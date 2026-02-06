@@ -6,10 +6,6 @@
  *
  * @author Evandro L. Vieira
  *
- * @date 29/01/2026
- *
- * @version 1.0
- *
  * @brief This file contains the definition of the class MP3.
  */
 

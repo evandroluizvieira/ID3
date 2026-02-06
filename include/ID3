@@ -1,4 +1,7 @@
 #include "../source/File.hpp"
+#include "../source/MP3FrameHeader.hpp"
+#include "../source/MP3Frame.hpp"
+#include "../source/MP3.hpp"
 #include "../source/MP3File.hpp"
 
 #include "../source/ID3v10.hpp"

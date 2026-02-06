@@ -1,17 +1,13 @@
+#ifndef ID3V24_HPP
+#define ID3V24_HPP
+
 /**
  * @file ID3v24.hpp
  *
  * @author Evandro L. Vieira
  *
- * @date 06/07/2024
- *
- * @version 1.0
- *
  * @brief This file contains the definition of the class ID3v24, inheriting from ID3v23, for ID3v2.4 tags.
  */
-
-#ifndef ID3V24_HPP
-#define ID3V24_HPP
 
 #include "ID3v23.hpp"
 

@@ -38,7 +38,6 @@ ID3v20FrameHeader::~ID3v20FrameHeader(){
 }
 
 uint32_t ID3v20FrameHeader::getFrameSize() const{
-	// Calculate size from the 3-byte size field
 	uint32_t size = 0;
 	size |= static_cast<uint32_t>(this->size[0]) << 16;
 	size |= static_cast<uint32_t>(this->size[1]) << 8;
@@ -47,7 +46,6 @@ uint32_t ID3v20FrameHeader::getFrameSize() const{
 }
 
 void ID3v20FrameHeader::setFrameSize(uint32_t size){
-	// Ensure size fits within the 3-byte limit
 	if(size > 0xFFFFFF){
 		size = 0xFFFFFF;
 	}
@@ -180,25 +178,20 @@ std::string ID3v20::getComment() const{
 	ID3v20Frame* frame = getFrame(identifier);
 
 	if(frame != nullptr){
-		// Convert frame data to a string
 		std::string frameData(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
 
-		//see more languages in: https://www.loc.gov/standards/iso639-2/php/code_list.php
 		std::string language = "eng";
 
-		// Find language code position
 		size_t languagePosition = frameData.find(language);
 		if(languagePosition == std::string::npos){
 			return "";
 		}
 
-		// Find the first comment position
 		size_t commentPos = frameData.find('\0', languagePosition + language.size() + 1);
 		if (commentPos == std::string::npos) {
 			return "";
 		}
 
-		// Extract the comment text
 		return frameData.substr(commentPos + 1);
 	}
 
@@ -208,10 +201,8 @@ std::string ID3v20::getComment() const{
 void ID3v20::setComment(const std::string& comment){
 	uint8_t identifier[3] = {'C', 'O', 'M'};
 
-	//see more languages in: https://www.loc.gov/standards/iso639-2/php/code_list.php
 	std::string language = "eng";
 
-	// Construct the frame data including language and comment
 	std::string frameData;
 	frameData += language;
 	frameData += '\0'; // Null separator

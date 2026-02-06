@@ -6,10 +6,6 @@
  *
  * @author Evandro L. Vieira
  *
- * @date 06/07/2024
- *
- * @version 1.0
- *
  * @brief This file contains the definition of the class ID3v20 and class ID3v20Header.
  */
 
@@ -245,6 +241,8 @@ class ID3v20{
 		 * @brief Sets the comment in the tag.
 		 *
 		 * @param comment The new comment to be set.
+		 *
+		 * @see https://www.loc.gov/standards/iso639-2/php/code_list.php for language codes.
 		 */
 		void setComment(const std::string& comment);
 

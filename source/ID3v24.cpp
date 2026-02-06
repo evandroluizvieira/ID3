@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cstdint>
 
-// --- ID3v24Footer ---
 ID3v24Footer::ID3v24Footer() {
     id[0] = '3'; id[1] = 'D'; id[2] = 'I';
     version_major = 0x04;
@@ -49,7 +48,7 @@ bool ID3v24Footer::isFooter(const uint8_t in[10]) {
     return in[0] == '3' && in[1] == 'D' && in[2] == 'I' && in[3] == 0x04;
 }
 
-// --- ID3v24Header ---
+
 ID3v24Header::ID3v24Header() {
     major_version = 4;
 }
@@ -69,7 +68,6 @@ bool ID3v24Header::hasFooter() const {
     return (flags & 0x10) != 0;
 }
 
-// --- ID3v24 ---
 ID3v24::ID3v24() {
 }
 

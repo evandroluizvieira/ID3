@@ -380,26 +380,19 @@ std::string ID3v23::getComment() const{
 void ID3v23::setComment(const std::string& comment){
 	uint8_t identifier[4] = {'C', 'O', 'M', 'M'};
 
-	// Set text encoding to ISO-8859-1 (0x00) or UTF-16 (0x01)
 	uint8_t encoding = 0x00;
-	std::string language = "eng"; // Default to English language code
+	std::string language = "eng";
 
-	// Construct the frame data
 	std::string frameData;
 
-	// Add encoding byte
 	frameData += static_cast<char>(encoding);
 
-	// Add 3-byte language code
 	frameData += language;
 
-	// Short content description (empty)
 	frameData += '\0';
 
-	// Add the actual comment
 	frameData += comment;
 
-	// Set the frame
 	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
@@ -415,11 +408,9 @@ std::string ID3v23::getTrack() const{
 void ID3v23::setTrack(uint8_t track){
 	uint8_t identifier[4] = {'T', 'R', 'C', 'K'};
 
-	// Convert track number to string
-	std::string trackStr = std::to_string(track);
+	std::string trackString = std::to_string(track);
 
-	// Set the frame with the track number string
-	setFrame(identifier, trackStr.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(trackStr.c_str())));
+	setFrame(identifier, trackString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(trackString.c_str())));
 }
 
 std::string ID3v23::getGenre() const{
@@ -435,9 +426,7 @@ std::string ID3v23::getGenre() const{
 void ID3v23::setGenre(ID3v10::Genre genre){
 	uint8_t identifier[4] = {'T', 'C', 'O', 'N'};
 
-	// Construct the genre string
-	std::string genreString = "(" + std::to_string(static_cast<int>(genre)) + ")";
+	std::string genreString = "(" + std::to_string(genre) + ")";
 
-	// Set the frame with the genre string
 	setFrame(identifier, genreString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(genreString.c_str())));
 }

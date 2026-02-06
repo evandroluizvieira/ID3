@@ -2,13 +2,9 @@
 #define ID3_HPP
 
 /**
- * @file ID3
+ * @file ID3.hpp
  *
  * @author Evandro L. Vieira
- *
- * @date 06/07/2024
- *
- * @version 1.0
  *
  * @brief This file contains the definition of the class ID3.
  */

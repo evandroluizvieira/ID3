@@ -6,10 +6,6 @@
  *
  * @author Evandro L. Vieira
  *
- * @date 29/01/2026
- *
- * @version 1.0
- *
  * @brief This file contains the definition of the class MP3FrameHeader and struct MP3FrameHeaderData.
  */
 
@@ -97,10 +93,10 @@ class MP3FrameHeader {
 		 * @brief Sample rate enumeration.
 		 */
 		enum SampleRate {
-			SR_44100 = 0,  /**< 44.1 kHz */
-			SR_48000 = 1,  /**< 48 kHz */
-			SR_32000 = 2,  /**< 32 kHz */
-			SR_Reserved = 3 /**< Reserved */
+			SR_44100 = 0,	/**< 44.1 kHz */
+			SR_48000 = 1,	/**< 48 kHz */
+			SR_32000 = 2,	/**< 32 kHz */
+			SR_Reserved = 3	/**< Reserved */
 		};
 
 		/**

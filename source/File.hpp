@@ -6,10 +6,6 @@
  *
  * @author Evandro L. Vieira
  *
- * @date 06/07/2024
- *
- * @version 1.0
- *
  * @brief This file contains the definition of the class File.
  */
 
@@ -74,19 +70,8 @@ class File{
 		bool save(const char* file);
 
 	private:
-		/**
-		 * @var uint8_t* File::data
-		 *
-		 * @brief Pointer to the array holding the binary data.
-		 */
-		uint8_t* data;
-
-		/**
-		 * @var uint64_t File::size
-		 *
-		 * @brief The size of the data array.
-		 */
-		uint64_t size;
+		uint8_t* data;	///< Pointer to the array holding the binary data.
+		uint64_t size;	///< The size of the data array.
 };
 
 #endif /* FILE_HPP */

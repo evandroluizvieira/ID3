@@ -3,7 +3,7 @@
  * @brief Full pipeline using the ID3 library
  */
 
-#include "../source/MP3File.hpp"
+#include <MP3File>
 #include <iostream>
 #include <filesystem>
 #include <string>
