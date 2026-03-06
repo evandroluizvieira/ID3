@@ -10,6 +10,9 @@ tools/
 docs/
 html/
 
+# Agent configuration files (local only)
+agents/ProjectStructure.md
+
 # CMake
 CMakeCache.txt
 CMakeFiles/
