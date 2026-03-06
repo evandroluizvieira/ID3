@@ -12,7 +12,7 @@ The library includes a complete set of command-line applications for common ID3 
 
 The library is open source and licensed under the MIT license.
 
-📚 **[View API Documentation](https://evandroluizvieira.github.io/ID3/)**
+**[View API Documentation](https://evandroluizvieira.github.io/ID3/)**
 
 ## Project Structure
 
