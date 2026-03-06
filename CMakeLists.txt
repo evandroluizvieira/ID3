@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(ID3 VERSION 1.0.0 LANGUAGES CXX)
+project(ID3 VERSION 2.0.0 LANGUAGES CXX)
 
 # C++ Standard
 set(CMAKE_CXX_STANDARD 17)
