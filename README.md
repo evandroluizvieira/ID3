@@ -11,6 +11,40 @@ The library includes a complete set of command-line applications for common ID3 
 
 The library is open source and licensed under the MIT license.
 
+## Project Structure
+
+The project is organized into several directories:
+
+- **`library/`** - Core ID3 library (CMake subproject)
+  - Builds static library (`libID3.a`) and shared library (`ID3.dll`/`.so`/`.dylib`)
+  - Sources in `source/`, public headers in `include/`
+  
+- **`application/`** - Example command-line applications (CMake subproject)
+  - 16 ready-to-use tools for tag manipulation
+  - Links against the shared library (DLL)
+  
+- **`test/`** - Test infrastructure (CMake subproject)
+  - GTest/GMock based unit tests
+  - Currently contains infrastructure setup
+  
+- **`include/`** - Public API headers (no file extension)
+  - Use `#include <ID3>` instead of `#include "ID3.hpp"`
+  - Clean interface for library consumers
+  
+- **`source/`** - Implementation files (.cpp and .hpp)
+  - Internal headers and implementation details
+
+**Build output structure:**
+```
+build/
+├── library/    # Static and shared libraries
+│   ├── libID3.a
+│   ├── ID3.dll (Windows) / libID3.so (Linux) / libID3.dylib (macOS)
+│   └── libID3.dll.a (import library, Windows only)
+└── binary/     # Example applications and executables
+    └── id3_*.exe (16 command-line tools)
+```
+
 ## Features
 - **Multi-Version Support**: Full compatibility with ID3v1.0, v1.1, v2.0, v2.3, and v2.4
 - **Tag Reading & Writing**: Extract and modify all standard ID3 fields (title, artist, album, year, genre, track, comment)
@@ -55,8 +89,21 @@ cmake --build build
 ```
 
 **Output:**
-- **Static**: `build/libID3.a` (all platforms)
-- **Shared**: `build/ID3.dll` (Windows), `build/libID3.so` (Linux), `build/libID3.dylib` (macOS)
+- **Static**: `build/library/libID3.a` (all platforms)
+- **Shared**: `build/library/ID3.dll` (Windows), `build/library/libID3.so` (Linux), `build/library/libID3.dylib` (macOS)
+- **Applications**: `build/binary/id3_*.exe` (if BUILD_APPLICATIONS=ON)
+
+**Build options:**
+```bash
+# Build only the library (no examples)
+cmake -B build -DBUILD_APPLICATIONS=OFF
+
+# Build library and examples (default)
+cmake -B build -DBUILD_APPLICATIONS=ON
+
+# Build with tests
+cmake -B build -DBUILD_TESTS=ON
+```
 
 ### Use in Your CMake Project
 

@@ -31,18 +31,18 @@ jobs:
     - name: Build libraries
       shell: msys2 {0}
       run: |
-        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_APPLICATIONS=OFF
         cmake --build build
-        ls -lh build/*.a build/*.dll 2>/dev/null || true
+        ls -lh build/library/*.a build/library/*.dll 2>/dev/null || true
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: id3-library-windows-x64
         path: |
-          build/libID3.a
-          build/ID3.dll
-          build/libID3.dll.a
+          build/library/libID3.a
+          build/library/ID3.dll
+          build/library/libID3.dll.a
           include/
 
   build-linux:
@@ -59,17 +59,17 @@ jobs:
     
     - name: Build libraries
       run: |
-        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_APPLICATIONS=OFF
         cmake --build build
-        ls -lh build/*.a build/*.so 2>/dev/null || true
+        ls -lh build/library/*.a build/library/*.so 2>/dev/null || true
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: id3-library-linux-x64
         path: |
-          build/libID3.a
-          build/libID3.so
+          build/library/libID3.a
+          build/library/libID3.so
           include/
 
   build-macos:
@@ -85,17 +85,17 @@ jobs:
     
     - name: Build libraries
       run: |
-        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_APPLICATIONS=OFF
         cmake --build build
-        ls -lh build/*.a build/*.dylib 2>/dev/null || true
+        ls -lh build/library/*.a build/library/*.dylib 2>/dev/null || true
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: id3-library-macos-arm64
         path: |
-          build/libID3.a
-          build/libID3.dylib
+          build/library/libID3.a
+          build/library/libID3.dylib
           include/
 
   create-release:

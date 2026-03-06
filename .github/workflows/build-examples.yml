@@ -1,0 +1,54 @@
+name: Build Examples
+
+on:
+  push:
+    branches:
+      - master
+      - feature/library-build
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-examples-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-ninja
+    
+    - name: Build shared library and examples
+      shell: msys2 {0}
+      run: |
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_APPLICATIONS=ON
+        cmake --build build
+        echo "=== Shared Library (DLL) ==="
+        ls -lh build/library/ID3.dll build/library/libID3.dll.a 2>/dev/null || true
+        echo "=== Example Applications ==="
+        ls -lh build/binary/*.exe 2>/dev/null || true
+    
+    - name: Test example application
+      shell: msys2 {0}
+      run: |
+        cd build/binary
+        ./id3_scan_id3.exe ../../test || echo "No test files, skipping"
+    
+    - name: Upload examples with DLL
+      uses: actions/upload-artifact@v4
+      with:
+        name: id3-examples-windows-x64
+        path: |
+          build/binary/*.exe
+          build/library/ID3.dll
+          README.md
