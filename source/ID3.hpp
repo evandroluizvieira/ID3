@@ -22,7 +22,7 @@
  *
  * @note ID3 class manages instances of ID3v1 and ID3v2 simultaneously.
  */
-class ID3_API ID3{
+class ID3{
 	public:
 		/**
 		 * @brief Default constructor that initializes the object with empty data.

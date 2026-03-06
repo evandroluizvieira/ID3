@@ -3,7 +3,7 @@
  * @brief Scan MP3 files and display ID3 tag versions using the ID3 library
  */
 
-#include <MP3File>
+#include <ID3>
 #include <iostream>
 #include <filesystem>
 #include <string>

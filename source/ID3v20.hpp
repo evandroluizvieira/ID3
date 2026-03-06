@@ -20,7 +20,7 @@
  *
  * @brief ID3 tag version 2.0 header derived from ID3v2HeaderBase.
  */
-class ID3_API ID3v20Header : public ID3v2HeaderBase{
+class ID3v20Header : public ID3v2HeaderBase{
 	public:
 		/**
 		 * @brief Default constructor initializing the ID3v2HeaderBase and set major version to 2.
@@ -52,7 +52,7 @@ class ID3_API ID3v20Header : public ID3v2HeaderBase{
  *
  * @brief Represents the header structure for an ID3v2.0 frame header that contains 3 bytes identifier of the frame and 3 bytes size of the frame.
  */
-class ID3_API ID3v20FrameHeader{
+class ID3v20FrameHeader{
 	public:
 		/**
 		 * @brief Default constructor that initializes the object with clear data.
@@ -101,7 +101,7 @@ class ID3_API ID3v20FrameHeader{
  *
  * @brief Structure representing an ID3v2.0 frame, consisting of a header and data.
  */
-struct ID3_API ID3v20Frame{
+struct ID3v20Frame{
 	/**
 	 * @brief Default constructor that initializes the object with clear data.
 	 */
@@ -137,7 +137,7 @@ struct ID3_API ID3v20Frame{
  * @note If the file has a header version 2.0, it must have at least 1 frame.
  * @note Functions for getting and setting specific frames are based on the limited ID3v1.1. However ID3v20 can include many more types of frames.
  */
-class ID3_API ID3v20{
+class ID3v20{
 	public:
 		/**
 		 * @brief Default constructor.

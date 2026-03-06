@@ -16,7 +16,7 @@
  *
  * @brief MP3 frame header data structure (4 bytes).
  */
-struct ID3_API MP3FrameHeaderData {
+struct MP3FrameHeaderData {
 	/**
 	 * @var uint8_t MP3FrameHeaderData::data[4]
 	 *
@@ -35,7 +35,7 @@ struct ID3_API MP3FrameHeaderData {
  *       - Byte 2: Bitrate + Sample rate
  *       - Byte 3: Padding + Private bit + Side info + CRC
  */
-class ID3_API MP3FrameHeader {
+class MP3FrameHeader {
 	friend class MP3Frame;
 
 	public:

@@ -3,7 +3,7 @@
  * @brief Remove ID3v2 tags from MP3 files using the ID3 library
  */
 
-#include <MP3File>
+#include <ID3>
 #include <iostream>
 #include <filesystem>
 #include <string>
