@@ -25,5 +25,3 @@ compile_commands.json
 *.lib
 *_static.o
 *_shared.o
-libID3.*
-ID3.dll
