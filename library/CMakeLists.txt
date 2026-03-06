@@ -1,6 +1,6 @@
 # ID3 Library Subproject
 cmake_minimum_required(VERSION 3.15)
-project(ID3Library VERSION 2.0.0 LANGUAGES CXX)
+project(ID3Library VERSION 3.0.0 LANGUAGES CXX)
 
 # Source files
 set(SOURCES

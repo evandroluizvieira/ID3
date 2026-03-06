@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = "ID3"
-PROJECT_NUMBER         = "2.0.0"
+PROJECT_NUMBER         = "3.0.0"
 PROJECT_BRIEF          = "C++ library for reading and writing ID3 tags in MP3 files"
 OUTPUT_DIRECTORY       = docs
 CREATE_SUBDIRS         = NO
