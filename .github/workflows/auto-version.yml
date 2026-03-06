@@ -1,0 +1,139 @@
+name: Auto Version
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'Doxyfile'
+      - 'docs/**'
+      - '.github/**'
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Get current version
+      id: current
+      run: |
+        CURRENT=$(grep "project(ID3 VERSION" CMakeLists.txt | sed 's/.*VERSION \([0-9.]*\).*/\1/')
+        echo "version=$CURRENT" >> $GITHUB_OUTPUT
+        echo "Current version: $CURRENT"
+    
+    - name: Get last release tag
+      id: last_tag
+      run: |
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        echo "tag=$LAST_TAG" >> $GITHUB_OUTPUT
+        echo "Last tag: $LAST_TAG"
+    
+    - name: Analyze commits since last release
+      id: analyze
+      run: |
+        LAST_TAG="${{ steps.last_tag.outputs.tag }}"
+        
+        # Get commits since last tag
+        if [ "$LAST_TAG" = "v0.0.0" ]; then
+          COMMITS=$(git log --pretty=format:"%s" HEAD)
+        else
+          COMMITS=$(git log --pretty=format:"%s" ${LAST_TAG}..HEAD)
+        fi
+        
+        echo "Commits since $LAST_TAG:"
+        echo "$COMMITS"
+        
+        # Determine version bump
+        BUMP="none"
+        
+        if echo "$COMMITS" | grep -q "BREAKING CHANGE:"; then
+          BUMP="major"
+        elif echo "$COMMITS" | grep -qE "^feat(\(.*\))?:"; then
+          BUMP="minor"
+        elif echo "$COMMITS" | grep -qE "^fix(\(.*\))?:"; then
+          BUMP="patch"
+        fi
+        
+        echo "bump=$BUMP" >> $GITHUB_OUTPUT
+        echo "Version bump type: $BUMP"
+    
+    - name: Calculate new version
+      id: new_version
+      run: |
+        CURRENT="${{ steps.current.outputs.version }}"
+        BUMP="${{ steps.analyze.outputs.bump }}"
+        
+        if [ "$BUMP" = "none" ]; then
+          echo "No version bump needed"
+          echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          echo "should_update=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+        
+        case "$BUMP" in
+          major)
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+            ;;
+          minor)
+            MINOR=$((MINOR + 1))
+            PATCH=0
+            ;;
+          patch)
+            PATCH=$((PATCH + 1))
+            ;;
+        esac
+        
+        NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "should_update=true" >> $GITHUB_OUTPUT
+        echo "New version: $NEW_VERSION (was $CURRENT)"
+    
+    - name: Update version in files
+      if: steps.new_version.outputs.should_update == 'true'
+      run: |
+        NEW_VERSION="${{ steps.new_version.outputs.version }}"
+        
+        # Update root CMakeLists.txt
+        sed -i "s/project(ID3 VERSION [0-9.]*/project(ID3 VERSION $NEW_VERSION/" CMakeLists.txt
+        
+        # Update library/CMakeLists.txt
+        sed -i "s/project(ID3Library VERSION [0-9.]*/project(ID3Library VERSION $NEW_VERSION/" library/CMakeLists.txt
+        
+        # Update Doxyfile
+        sed -i "s/PROJECT_NUMBER.*/PROJECT_NUMBER         = \"$NEW_VERSION\"/" Doxyfile
+        
+        # Update version badge in README.md
+        sed -i "s/version-[0-9.]*-blue/version-$NEW_VERSION-blue/" README.md
+        
+        echo "Updated version to $NEW_VERSION in:"
+        echo "- CMakeLists.txt"
+        echo "- library/CMakeLists.txt"
+        echo "- Doxyfile"
+        echo "- README.md"
+    
+    - name: Commit version bump
+      if: steps.new_version.outputs.should_update == 'true'
+      run: |
+        NEW_VERSION="${{ steps.new_version.outputs.version }}"
+        
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        git add CMakeLists.txt library/CMakeLists.txt Doxyfile README.md
+        git commit -m "chore: Bump version to $NEW_VERSION [skip ci]"
+        git tag "v$NEW_VERSION"
+        git push origin master
+        git push origin "v$NEW_VERSION"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
