@@ -201,7 +201,7 @@ fs::path processDirectory(const fs::path& sourcePath) {
             std::string album = id3.v2.v20->getAlbum();
             std::string year = id3.v2.v20->getYear();
             std::string comment = id3.v2.v20->getComment();
-            std::string track = id3.v2.v20->getTrack();
+            uint8_t track = id3.v2.v20->getTrack();
             
             if (!id3.v1.v11) id3.v1.v11 = new ID3v11();
             
@@ -211,13 +211,8 @@ fs::path processDirectory(const fs::path& sourcePath) {
             id3.v1.v11->setYear(year);
             id3.v1.v11->setComment(comment);
             
-            if (!track.empty()) {
-                try {
-                    int trackNum = std::stoi(track);
-                    if (trackNum > 0 && trackNum <= 255) {
-                        id3.v1.v11->setTrack(static_cast<uint8_t>(trackNum));
-                    }
-                } catch (...) {}
+            if (track > 0) {
+                id3.v1.v11->setTrack(track);
             }
             
             id3.v1.v11->setGenre(ID3v10::Other);
