@@ -19,7 +19,7 @@
  *
  * @brief MP3 class containing a sequence of MP3 frames.
  */
-class MP3 {
+class ID3_API MP3 {
 	public:
 		/**
 		 * @brief Default constructor that initializes an empty frame list.

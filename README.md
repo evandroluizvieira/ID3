@@ -30,14 +30,45 @@ git clone https://github.com/evandroluizvieira/ID3.git
 ## Build
 
 ### Prerequisites
-- MSYS64 with MinGW64 toolchain
-- GCC with C++17 support
-- Windows 10/11 (for UTF-8 path support)
+- CMake 3.15 or higher
+- GCC with C++17 support (or MSVC/Clang)
+- Ninja (optional, recommended)
 
-### Compile Library
+### Build with CMake
+
+**Configure and build:**
 ```bash
-g++ -std=c++17 -O2 -DNDEBUG -c source/*.cpp
-ar rcs libid3.a *.o
+# Configure
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Build (generates both static and shared libraries)
+cmake --build build
+
+# Install (optional)
+cmake --install build --prefix /path/to/install
+```
+
+**Using Ninja (faster):**
+```bash
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+**Output:**
+- **Static**: `build/libID3.a` (all platforms)
+- **Shared**: `build/ID3.dll` (Windows), `build/libID3.so` (Linux), `build/libID3.dylib` (macOS)
+
+### Use in Your CMake Project
+
+After installing or building ID3:
+
+```cmake
+# Find the package
+find_package(ID3 REQUIRED)
+
+# Link against the library
+add_executable(your_app main.cpp)
+target_link_libraries(your_app PRIVATE ID3::static)  # or ID3::shared
 ```
 
 ### Compile Applications
@@ -53,6 +84,15 @@ g++ -std=c++17 -O2 -DNDEBUG \
 
 ## Library Usage
 
+### Download Pre-built Libraries
+
+Pre-compiled libraries are automatically built for multiple platforms via GitHub Actions and available as artifacts in the [Actions tab](https://github.com/evandroluizvieira/ID3/actions/workflows/build-libraries.yml).
+
+**Available platforms:**
+- Windows x64 (MSYS2/MinGW64)
+- Linux x64 (GCC)
+- macOS ARM64 (Apple Silicon)
+
 ### Including the Library
 
 The library provides header files without extension in the `include/` directory for easy integration:
@@ -63,6 +103,27 @@ The library provides header files without extension in the `include/` directory 
 #include <ID3v1>      // Include only ID3v1 tags
 #include <ID3v2>      // Include only ID3v2 tags
 ```
+
+### Linking
+
+**Static library:**
+```bash
+g++ -std=c++17 your_program.cpp -I/path/to/ID3/include -L/path/to/ID3 -lID3 -o your_program
+```
+
+**Shared library (Windows):**
+```bash
+g++ -std=c++17 -DID3_USE_SHARED your_program.cpp -I/path/to/ID3/include -L/path/to/ID3 -lID3 -o your_program
+# Ensure ID3.dll is in PATH or same directory as executable
+```
+
+**Shared library (Linux):**
+```bash
+g++ -std=c++17 -DID3_USE_SHARED your_program.cpp -I/path/to/ID3/include -L/path/to/ID3 -lID3 -o your_program
+export LD_LIBRARY_PATH=/path/to/ID3:$LD_LIBRARY_PATH
+```
+
+### Compiler Flags
 
 When compiling, add the include directory to your compiler's include path:
 

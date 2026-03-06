@@ -20,7 +20,7 @@
  *
  * @brief ID3 tag version 2.3 header derived from ID3v2HeaderBase.
  */
-class ID3v23Header : public ID3v2HeaderBase{
+class ID3_API ID3v23Header : public ID3v2HeaderBase{
 	public:
 		/**
 		 * @brief Default constructor initializing the ID3v2HeaderBase and set major version to 3.
