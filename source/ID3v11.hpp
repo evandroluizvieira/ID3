@@ -19,7 +19,7 @@
  *
  * @brief ID3 tag version 1.1 data structure.
  */
-struct ID3_API ID3v11Data{
+struct ID3v11Data{
 	/**
 	 * @var uint8_t ID3v11Data::identification[3]
 	 *
@@ -82,7 +82,7 @@ struct ID3_API ID3v11Data{
  *
  * @brief ID3 tag version 1.1 class that holds information in ID3v11Data structure, providing methods to access and modify ID3v1.1 tag information.
  */
-class ID3_API ID3v11{
+class ID3v11{
 	friend class MP3File;
 
 	public:

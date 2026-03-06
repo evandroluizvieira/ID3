@@ -15,7 +15,7 @@
 /**
  * @brief File class that holds binary data.
  */
-class ID3_API File{
+class File{
 	friend class MP3File;
 
 	public:
