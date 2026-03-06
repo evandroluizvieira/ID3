@@ -10,8 +10,6 @@ ID3 is a C++ library for reading, writing, and manipulating ID3 tags in MP3 file
 
 The library includes a complete set of command-line applications for common ID3 tag operations, making it easy to scan, remove, and convert tags between different versions.
 
-The library is open source and licensed under the MIT license.
-
 **[View API Documentation](https://evandroluizvieira.github.io/ID3/)**
 
 ## Project Structure
