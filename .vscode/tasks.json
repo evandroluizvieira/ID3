@@ -2,6 +2,38 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build Library",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-B",
+                "${workspaceFolder}/build",
+                "-G",
+                "Ninja",
+                "-DCMAKE_BUILD_TYPE=Release"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Compile Library",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": ["Build Library"],
+            "problemMatcher": ["$gcc"],
+            "group": "build"
+        },
+        {
             "label": "Build: id3_scan_id3",
             "type": "shell",
             "command": "g++",
@@ -11,22 +43,12 @@
                 "-DNDEBUG",
                 "-std=c++17",
                 "${workspaceFolder}/application/id3_scan_id3.cpp",
-                "${workspaceFolder}/source/File.cpp",
-                "${workspaceFolder}/source/MP3File.cpp",
-                "${workspaceFolder}/source/MP3.cpp",
-                "${workspaceFolder}/source/MP3Frame.cpp",
-                "${workspaceFolder}/source/MP3FrameHeader.cpp",
-                "${workspaceFolder}/source/ID3.cpp",
-                "${workspaceFolder}/source/ID3v1.cpp",
-                "${workspaceFolder}/source/ID3v10.cpp",
-                "${workspaceFolder}/source/ID3v11.cpp",
-                "${workspaceFolder}/source/ID3v2.cpp",
-                "${workspaceFolder}/source/ID3v20.cpp",
-                "${workspaceFolder}/source/ID3v23.cpp",
-                "${workspaceFolder}/source/ID3v24.cpp",
+                "-L${workspaceFolder}/build/library",
+                "-lID3",
                 "-o",
-                "${workspaceFolder}/build/id3_scan_id3.exe"
+                "${workspaceFolder}/build/binary/id3_scan_id3.exe"
             ],
+            "dependsOn": ["Compile Library"],
             "problemMatcher": ["$gcc"],
             "group": "build"
         },
@@ -40,22 +62,12 @@
                 "-DNDEBUG",
                 "-std=c++17",
                 "${workspaceFolder}/application/id3_remove_id3v1.cpp",
-                "${workspaceFolder}/source/File.cpp",
-                "${workspaceFolder}/source/MP3File.cpp",
-                "${workspaceFolder}/source/MP3.cpp",
-                "${workspaceFolder}/source/MP3Frame.cpp",
-                "${workspaceFolder}/source/MP3FrameHeader.cpp",
-                "${workspaceFolder}/source/ID3.cpp",
-                "${workspaceFolder}/source/ID3v1.cpp",
-                "${workspaceFolder}/source/ID3v10.cpp",
-                "${workspaceFolder}/source/ID3v11.cpp",
-                "${workspaceFolder}/source/ID3v2.cpp",
-                "${workspaceFolder}/source/ID3v20.cpp",
-                "${workspaceFolder}/source/ID3v23.cpp",
-                "${workspaceFolder}/source/ID3v24.cpp",
+                "-L${workspaceFolder}/build/library",
+                "-lID3",
                 "-o",
-                "${workspaceFolder}/build/id3_remove_id3v1.exe"
+                "${workspaceFolder}/build/binary/id3_remove_id3v1.exe"
             ],
+            "dependsOn": ["Compile Library"],
             "problemMatcher": ["$gcc"],
             "group": "build"
         },
@@ -83,7 +95,7 @@
                 "${workspaceFolder}/source/ID3v23.cpp",
                 "${workspaceFolder}/source/ID3v24.cpp",
                 "-o",
-                "${workspaceFolder}/build/id3_remove_id3v2.exe"
+                "${workspaceFolder}/build/binary/id3_remove_id3v2.exe"
             ],
             "problemMatcher": ["$gcc"],
             "group": "build"
@@ -112,7 +124,7 @@
                 "${workspaceFolder}/source/ID3v23.cpp",
                 "${workspaceFolder}/source/ID3v24.cpp",
                 "-o",
-                "${workspaceFolder}/build/id3_full_process.exe"
+                "${workspaceFolder}/build/binary/id3_full_process.exe"
             ],
             "problemMatcher": ["$gcc"],
             "group": {
@@ -144,7 +156,7 @@
                 "${workspaceFolder}/source/ID3v23.cpp",
                 "${workspaceFolder}/source/ID3v24.cpp",
                 "-o",
-                "${workspaceFolder}/build/id3_convert_v2_to_v1.exe"
+                "${workspaceFolder}/build/binary/id3_convert_v2_to_v1.exe"
             ],
             "problemMatcher": ["$gcc"],
             "group": "build"
@@ -173,7 +185,7 @@
                 "${workspaceFolder}/source/ID3v23.cpp",
                 "${workspaceFolder}/source/ID3v24.cpp",
                 "-o",
-                "${workspaceFolder}/build/id3_convert_v1_to_v2.exe"
+                "${workspaceFolder}/build/binary/id3_convert_v1_to_v2.exe"
             ],
             "problemMatcher": ["$gcc"],
             "group": "build"
