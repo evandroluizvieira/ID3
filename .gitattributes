@@ -1,0 +1,15 @@
+# Linguist language detection for GitHub
+*.h linguist-language=C++
+*.hpp linguist-language=C++
+*.cpp linguist-language=C++
+
+# CMake files
+CMakeLists.txt linguist-language=CMake
+*.cmake linguist-language=CMake
+
+# Documentation
+*.md linguist-documentation
+Doxyfile linguist-documentation
+
+# Generated files
+docs/** linguist-generated
