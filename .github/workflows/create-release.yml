@@ -1,0 +1,107 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'Doxyfile'
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    needs: []
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Get version from commit
+      id: version
+      run: |
+        # Use short SHA as version
+        VERSION="nightly-$(git rev-parse --short HEAD)"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+    
+    - name: Wait for build workflows
+      run: |
+        echo "Waiting for build workflows to complete..."
+        sleep 30
+    
+    - name: Download library artifacts
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        workflow: build-libraries.yml
+        name: id3-library-releases
+        path: ./artifacts/libraries
+        check_artifacts: true
+        search_artifacts: true
+        skip_unpack: false
+    
+    - name: Download example artifacts
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        workflow: build-examples.yml
+        name: id3-examples-windows-x64
+        path: ./artifacts/examples
+        check_artifacts: true
+        search_artifacts: true
+        skip_unpack: false
+    
+    - name: List downloaded artifacts
+      run: |
+        echo "Library artifacts:"
+        ls -lh artifacts/libraries/ || echo "No library artifacts"
+        echo "Example artifacts:"
+        ls -lh artifacts/examples/ || echo "No example artifacts"
+    
+    - name: Create release archives
+      run: |
+        cd artifacts/examples
+        zip -r ../../id3-examples-windows-x64.zip .
+        cd ../..
+    
+    - name: Delete previous nightly release
+      run: |
+        gh release delete nightly --yes || true
+        git push origin :refs/tags/nightly || true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: nightly
+        name: Latest Build (Nightly)
+        body: |
+          Automated nightly build from the latest master branch.
+          
+          **Commit:** ${{ github.sha }}
+          **Date:** ${{ github.event.head_commit.timestamp }}
+          
+          ## Downloads
+          
+          ### Libraries (All Platforms)
+          - `id3-library-windows-x64.zip` - Windows x64 (Static + DLL)
+          - `id3-library-linux-x64.tar.gz` - Linux x64 (Static + Shared)
+          - `id3-library-macos-arm64.tar.gz` - macOS ARM64 (Static + Dylib)
+          
+          ### Applications (Windows Only)
+          - `id3-examples-windows-x64.zip` - 16 command-line tools + DLL
+          
+          **Note:** This is an automated build. For stable releases, check tagged versions.
+        files: |
+          artifacts/libraries/id3-library-windows-x64.zip
+          artifacts/libraries/id3-library-linux-x64.tar.gz
+          artifacts/libraries/id3-library-macos-arm64.tar.gz
+          id3-examples-windows-x64.zip
+        draft: false
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

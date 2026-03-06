@@ -5,10 +5,6 @@
 [![MSYS64](https://img.shields.io/badge/Compiler-MSYS64_MinGW64-blue)](https://www.msys2.org/)
 [![Documentation](https://img.shields.io/badge/docs-Doxygen-blue.svg)](https://evandroluizvieira.github.io/ID3/)
 
-[![Build Libraries](https://github.com/evandroluizvieira/ID3/actions/workflows/build-libraries.yml/badge.svg)](https://github.com/evandroluizvieira/ID3/actions/workflows/build-libraries.yml)
-[![Build Examples](https://github.com/evandroluizvieira/ID3/actions/workflows/build-examples.yml/badge.svg)](https://github.com/evandroluizvieira/ID3/actions/workflows/build-examples.yml)
-[![Generate Doxygen Documentation](https://github.com/evandroluizvieira/ID3/actions/workflows/doxygen.yml/badge.svg)](https://github.com/evandroluizvieira/ID3/actions/workflows/doxygen.yml)
-
 ## Overview
 ID3 is a C++ library for reading, writing, and manipulating ID3 tags in MP3 files. It provides comprehensive support for both ID3v1 (v1.0, v1.1) and ID3v2 (v2.0, v2.3, v2.4) tag formats, enabling full control over MP3 metadata.
 
@@ -18,9 +14,9 @@ The library includes a complete set of command-line applications for common ID3 
 
 **[API Documentation](https://evandroluizvieira.github.io/ID3/)** - Complete API reference and usage guide
 
-**[Download Libraries](https://github.com/evandroluizvieira/ID3/actions/workflows/build-libraries.yml)** - Pre-built libraries for Windows, Linux, and macOS
+**[Download Libraries](https://github.com/evandroluizvieira/ID3/releases/latest)** - Pre-built libraries for Windows, Linux, and macOS
 
-**[Download Examples](https://github.com/evandroluizvieira/ID3/actions/workflows/build-examples.yml)** - Command-line applications with DLL
+**[Download Examples](https://github.com/evandroluizvieira/ID3/releases/latest)** - Command-line applications with DLL
 
 ## Project Structure
 
