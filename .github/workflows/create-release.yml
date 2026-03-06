@@ -20,7 +20,11 @@ jobs:
     - name: Get version from tag
       id: version
       run: |
-        VERSION=${GITHUB_REF#refs/tags/}
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION=$(grep "project(ID3 VERSION" CMakeLists.txt | sed 's/.*VERSION \([0-9.]*\).*/v\1/')
+        fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Version: $VERSION"
     
