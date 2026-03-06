@@ -141,7 +141,7 @@ g++ -std=c++17 -O2 -DNDEBUG \
 
 ### Download Pre-built Libraries
 
-Pre-compiled libraries are automatically built for multiple platforms via GitHub Actions and available as artifacts in the [Actions tab](https://github.com/evandroluizvieira/ID3/actions/workflows/build-libraries.yml).
+Pre-compiled libraries are automatically built for multiple platforms and available in the [Releases section](https://github.com/evandroluizvieira/ID3/releases/latest).
 
 **Available platforms:**
 - Windows x64 (MSYS2/MinGW64)
