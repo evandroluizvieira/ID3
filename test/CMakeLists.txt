@@ -2,8 +2,11 @@
 cmake_minimum_required(VERSION 3.15)
 project(ID3Tests VERSION 1.0.0 LANGUAGES CXX)
 
-# Find ID3 library
-find_package(ID3 REQUIRED)
+# When built as standalone project, find the library
+# When built as subproject, ID3::static is already available
+if(NOT TARGET ID3::static)
+    find_package(ID3 REQUIRED)
+endif()
 
 # Find GTest
 find_package(GTest)
