@@ -36,7 +36,6 @@ jobs:
         name: id3-library-releases
         path: ./artifacts/libraries
         branch: master
-        event: push
         check_artifacts: true
         search_artifacts: true
         skip_unpack: false
@@ -48,7 +47,6 @@ jobs:
         name: id3-examples-windows-x64
         path: ./artifacts/examples
         branch: master
-        event: push
         check_artifacts: true
         search_artifacts: true
         skip_unpack: false
