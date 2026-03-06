@@ -2,12 +2,8 @@ name: Create Release
 
 on:
   push:
-    branches:
-      - master
-    paths-ignore:
-      - '**.md'
-      - 'Doxyfile'
-      - 'docs/**'
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -21,12 +17,12 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Get version from CMakeLists.txt
+    - name: Get version from tag
       id: version
       run: |
-        VERSION=$(grep "project(ID3 VERSION" CMakeLists.txt | sed 's/.*VERSION \([0-9.]*\).*/\1/')
-        echo "version=v$VERSION" >> $GITHUB_OUTPUT
-        echo "Version: v$VERSION"
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
     
     - name: Wait for build workflows
       run: |
