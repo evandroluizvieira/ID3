@@ -21,13 +21,12 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Get version from commit
+    - name: Get version from CMakeLists.txt
       id: version
       run: |
-        # Use short SHA as version
-        VERSION="nightly-$(git rev-parse --short HEAD)"
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "Version: $VERSION"
+        VERSION=$(grep "project(ID3 VERSION" CMakeLists.txt | sed 's/.*VERSION \([0-9.]*\).*/\1/')
+        echo "version=v$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: v$VERSION"
     
     - name: Wait for build workflows
       run: |
@@ -67,35 +66,39 @@ jobs:
         zip -r ../../id3-examples-windows-x64.zip .
         cd ../..
     
-    - name: Delete previous nightly release
-      run: |
-        gh release delete nightly --yes || true
-        git push origin :refs/tags/nightly || true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: nightly
-        name: Latest Build (Nightly)
+        tag_name: ${{ steps.version.outputs.version }}
+        name: ID3 ${{ steps.version.outputs.version }}
         body: |
-          Automated nightly build from the latest master branch.
+          Release ${{ steps.version.outputs.version }} - Automated build from master branch.
           
           **Commit:** ${{ github.sha }}
-          **Date:** ${{ github.event.head_commit.timestamp }}
+          **Build Date:** ${{ github.event.head_commit.timestamp }}
           
           ## Downloads
           
           ### Libraries (All Platforms)
-          - `id3-library-windows-x64.zip` - Windows x64 (Static + DLL)
-          - `id3-library-linux-x64.tar.gz` - Linux x64 (Static + Shared)
-          - `id3-library-macos-arm64.tar.gz` - macOS ARM64 (Static + Dylib)
+          - `id3-library-windows-x64.zip` - Windows x64 (Static library + DLL + Import library)
+          - `id3-library-linux-x64.tar.gz` - Linux x64 (Static + Shared library)
+          - `id3-library-macos-arm64.tar.gz` - macOS ARM64 (Static + Dynamic library)
           
           ### Applications (Windows Only)
-          - `id3-examples-windows-x64.zip` - 16 command-line tools + DLL
+          - `id3-examples-windows-x64.zip` - 16 command-line tools with DLL
           
-          **Note:** This is an automated build. For stable releases, check tagged versions.
+          ## What's Included
+          
+          **Libraries package contains:**
+          - Static library (libID3.a)
+          - Shared library (ID3.dll / libID3.so / libID3.dylib)
+          - Import library for DLL (libID3.dll.a - Windows only)
+          - Public headers (include/ directory)
+          
+          **Examples package contains:**
+          - 16 executable tools (.exe)
+          - ID3.dll (required to run the tools)
+          - README.md
         files: |
           artifacts/libraries/id3-library-windows-x64.zip
           artifacts/libraries/id3-library-linux-x64.tar.gz

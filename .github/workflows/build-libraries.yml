@@ -41,8 +41,8 @@ jobs:
         name: id3-library-windows-x64
         path: |
           build/library/libID3.a
-          build/library/ID3.dll
           build/library/libID3.dll.a
+          build/binary/ID3.dll
           include/
 
   build-linux:
