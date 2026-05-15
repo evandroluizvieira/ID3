@@ -321,7 +321,17 @@ std::string ID3v23::getTitle() const{
 
 void ID3v23::setTitle(const std::string& title){
 	uint8_t identifier[4] = {'T', 'I', 'T', '2'};
-	setFrame(identifier, title.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str())));
+	uint32_t size = title.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
+	}
 }
 
 std::string ID3v23::getArtist() const{
@@ -335,7 +345,17 @@ std::string ID3v23::getArtist() const{
 
 void ID3v23::setArtist(const std::string& title){
 	uint8_t identifier[4] = {'T', 'P', 'E', '1'};
-	setFrame(identifier, title.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str())));
+	uint32_t size = title.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
+	}
 }
 
 std::string ID3v23::getAlbum() const{
@@ -349,7 +369,17 @@ std::string ID3v23::getAlbum() const{
 
 void ID3v23::setAlbum(const std::string& title){
 	uint8_t identifier[4] = {'T', 'A', 'L', 'B'};
-	setFrame(identifier, title.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str())));
+	uint32_t size = title.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
+	}
 }
 
 std::string ID3v23::getYear() const{
@@ -364,7 +394,17 @@ std::string ID3v23::getYear() const{
 void ID3v23::setYear(const std::string& year){
 	if(year.size() == 4){
 		uint8_t identifier[4] = {'T', 'Y', 'E', 'R'};
-		setFrame(identifier, year.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(year.c_str())));
+		uint32_t size = year.size();
+		uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(year.c_str()));
+		ID3v23Frame* frame = getFrame(identifier);
+		if(frame != nullptr){
+			delete[] frame->data;
+			frame->data = new uint8_t[size];
+			std::memcpy(frame->data, data, size);
+			frame->header.setFrameSize(size);
+		}else{
+			addFrame(identifier, size, data);
+		}
 	}
 }
 
@@ -393,7 +433,17 @@ void ID3v23::setComment(const std::string& comment){
 
 	frameData += comment;
 
-	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
+	}
 }
 
 std::string ID3v23::getTrack() const{
@@ -407,10 +457,18 @@ std::string ID3v23::getTrack() const{
 
 void ID3v23::setTrack(uint8_t track){
 	uint8_t identifier[4] = {'T', 'R', 'C', 'K'};
-
 	std::string trackString = std::to_string(track);
-
-	setFrame(identifier, trackString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(trackString.c_str())));
+	uint32_t size = trackString.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(trackString.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
+	}
 }
 
 std::string ID3v23::getGenre() const{
@@ -425,8 +483,16 @@ std::string ID3v23::getGenre() const{
 
 void ID3v23::setGenre(ID3v10::Genre genre){
 	uint8_t identifier[4] = {'T', 'C', 'O', 'N'};
-
-	std::string genreString = "(" + std::to_string(genre) + ")";
-
-	setFrame(identifier, genreString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(genreString.c_str())));
+	std::string genreString = '(' + std::to_string(genre) + ')';
+	uint32_t size = genreString.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(genreString.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
+	}
 }

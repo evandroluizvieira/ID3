@@ -113,36 +113,239 @@ ID3 MP3File::getID3() const{
 			v24->header = *reinterpret_cast<ID3v24Header*>(data);
 
 			id3.v2.v24 = v24;
-		}else if(hasID3v23() == true){
+		} else if(hasID3v23() == true){
 			ID3v23* v23 = new ID3v23();
-			//std::memcpy(&v23->header, data, sizeof(ID3v2HeaderBase));
-			v23->header = *reinterpret_cast<ID3v23Header*>(data);
+
+			uint32_t currentPosition = 0;
+
+			{// Read header
+
+				// Define fixed byte sizes from the ID3v2.3 header
+				// tag[3] + major_version[1] + revision_number[1] + flags[1] + size[4]
+				const uint32_t id3v2HeaderTagSizeOf = 3;
+				const uint32_t id3v2HeaderMajorVersionSizeOf = 1;
+				const uint32_t id3v2HeaderRevisionNumberSizeOf = 1;
+				const uint32_t id3v2HeaderFlagsSizeOf = 1;
+				const uint32_t id3v2HeaderTagSizeFieldSizeOf = 4;
+
+				//Read tag
+				std::memcpy(v23->header.tag, &data[currentPosition], id3v2HeaderTagSizeOf);
+				currentPosition += id3v2HeaderTagSizeOf;
+
+				//Read major version
+				std::memcpy(&v23->header.major_version, &data[currentPosition], id3v2HeaderMajorVersionSizeOf);
+				currentPosition += id3v2HeaderMajorVersionSizeOf;
+
+				//Read revision_number
+				std::memcpy(&v23->header.revision_number, &data[currentPosition], id3v2HeaderRevisionNumberSizeOf);
+				currentPosition += id3v2HeaderRevisionNumberSizeOf;
+
+				//Read flags
+				std::memcpy(&v23->header.flags, &data[currentPosition], id3v2HeaderFlagsSizeOf);
+				currentPosition += id3v2HeaderFlagsSizeOf;
+
+				//Read tag size
+				std::memcpy(v23->header.size, &data[currentPosition], id3v2HeaderTagSizeFieldSizeOf);
+				currentPosition += id3v2HeaderTagSizeFieldSizeOf;
+			}
+
+			// Extended header (ID3v2.3 only if flag is set)
+			if(v23->header.hasExtendedHeader() == true){
+
+				// Define fixed byte sizes from the ID3v2.3 extended header layout:
+				// size[4] + flags[2] + padding[4] + optional crc[4]
+				const uint32_t id3v23ExtHeaderSizeSizeOf = 4;
+				const uint32_t id3v23ExtHeaderFlagsSizeOf = 2;
+				const uint32_t id3v23ExtHeaderPaddingSizeOf = 4;
+				const uint32_t id3v23ExtHeaderCRCSizeOf = 4;
+
+				v23->extendedHeader = new ID3v23ExtendedHeader();
+
+				// Read extended header size
+				std::memcpy(&v23->extendedHeader->size, &data[currentPosition], id3v23ExtHeaderSizeSizeOf);
+				currentPosition += id3v23ExtHeaderSizeSizeOf;
+
+				// Read flags
+				std::memcpy(&v23->extendedHeader->flags, &data[currentPosition], id3v23ExtHeaderFlagsSizeOf);
+				currentPosition += id3v23ExtHeaderFlagsSizeOf;
+
+				// Read padding
+				std::memcpy(&v23->extendedHeader->padding, &data[currentPosition], id3v23ExtHeaderPaddingSizeOf);
+				currentPosition += id3v23ExtHeaderPaddingSizeOf;
+
+				// Read CRC if present
+				if(v23->extendedHeader->hasCRC() == true){
+					v23->extendedHeader->crc = new uint32_t;
+					std::memcpy(v23->extendedHeader->crc, &data[currentPosition], id3v23ExtHeaderCRCSizeOf);
+					currentPosition += id3v23ExtHeaderCRCSizeOf;
+				}
+			}
+
+			// Define fixed byte sizes from the ID3v2.3 frame header layout:
+			// identifier[4] + size[4] + flags[2]
+			const uint32_t id3v23FrameHeaderIdentifierSizeOf = 4;
+			const uint32_t id3v23FrameHeaderSizeSizeOf = 4;
+			const uint32_t id3v23FrameHeaderFlagsSizeOf = 2;
+			const uint32_t id3v23FrameHeaderTotalSizeOf = id3v23FrameHeaderIdentifierSizeOf + id3v23FrameHeaderSizeSizeOf + id3v23FrameHeaderFlagsSizeOf;
+
+			// Calculate end of tag region
+			const uint32_t tagEndPosition = currentPosition + v23->header.getTagSize();
+
+			// Iterate through frames
+			while(currentPosition < tagEndPosition){
+				// Check if there is enough space for a frame header
+				if(currentPosition + id3v23FrameHeaderTotalSizeOf > tagEndPosition){
+					break;
+				}
+
+				ID3v23Frame* frame = new ID3v23Frame();
+
+				{// Read frame header
+					// Read identifier
+					std::memcpy(frame->header.identifier, &data[currentPosition], id3v23FrameHeaderIdentifierSizeOf);
+					currentPosition += id3v23FrameHeaderIdentifierSizeOf;
+
+					// Read size
+					std::memcpy(frame->header.size, &data[currentPosition], id3v23FrameHeaderSizeSizeOf);
+					currentPosition += id3v23FrameHeaderSizeSizeOf;
+
+					// Read flags
+					std::memcpy(&frame->header.flags, &data[currentPosition], id3v23FrameHeaderFlagsSizeOf);
+					currentPosition += id3v23FrameHeaderFlagsSizeOf;
+				}
+
+				// Padding check (important for ID3v2.3)
+				// ID3v2.3 tags may contain a padding area at the end of the frames section,
+				// consisting of zeroed bytes (0x00). When the frame identifier is 0x000000,
+				// it indicates the start of this padding region, meaning no more valid frames follow.
+				if(frame->header.identifier[0] == 0x00 && frame->header.identifier[1] == 0x00 && frame->header.identifier[2] == 0x00 && frame->header.identifier[3] == 0x00){
+					delete frame;
+					break;
+				}
+
+				// Get frame size
+				uint32_t frameSize = frame->header.getFrameSize();
+
+				// Invalid frame size
+				if(frameSize == 0){
+					delete frame;
+					continue;
+				}
+
+				// Frame must fit inside tag
+				if(currentPosition + frameSize > tagEndPosition){
+					delete frame;
+					break;
+				}
+
+				// Allocate frame data
+				frame->data = new uint8_t[frameSize];
+
+				// Read frame data
+				std::memcpy(frame->data, &data[currentPosition], frameSize);
+				currentPosition += frameSize;
+
+				// Store frame in ID3v23 object
+				v23->frames.push_back(frame);
+			}
 
 			id3.v2.v23 = v23;
 		}else if(hasID3v20() == true){
 			ID3v20* v20 = new ID3v20();
-			//std::memcpy(&v20->header, data, sizeof(ID3v2HeaderBase));
-			v20->header = *reinterpret_cast<ID3v20Header*>(data);
 
-			id3.v2.v20 = v20;
+			uint32_t currentPosition = 0;
 
-		uint32_t tagSize = v20->header.getTagSize();
+			{// Read header
 
-			// Determine the position where frames start after the header
-			uint32_t headerBaseSize = sizeof(ID3v2HeaderBase);
-			uint32_t currentPosition = headerBaseSize;
+				// Define fixed byte sizes from the ID3v2.0 header
+				// tag[3] + major_version[1] + revision_number[1] + flags[1] + size[4]
+				const uint32_t id3v2HeaderTagSizeOf = 3;
+				const uint32_t id3v2HeaderMajorVersionSizeOf = 1;
+				const uint32_t id3v2HeaderRevisionNumberSizeOf = 1;
+				const uint32_t id3v2HeaderFlagsSizeOf = 1;
+				const uint32_t id3v2HeaderTagSizeFieldSizeOf = 4;
+
+				//Read tag
+				std::memcpy(v20->header.tag, &data[currentPosition], id3v2HeaderTagSizeOf);
+				currentPosition += id3v2HeaderTagSizeOf;
+
+				//Read major version
+				std::memcpy(&v20->header.major_version, &data[currentPosition], id3v2HeaderMajorVersionSizeOf);
+				currentPosition += id3v2HeaderMajorVersionSizeOf;
+
+				//Read revision_number
+				std::memcpy(&v20->header.revision_number, &data[currentPosition], id3v2HeaderRevisionNumberSizeOf);
+				currentPosition += id3v2HeaderRevisionNumberSizeOf;
+
+				//Read flags
+				std::memcpy(&v20->header.flags, &data[currentPosition], id3v2HeaderFlagsSizeOf);
+				currentPosition += id3v2HeaderFlagsSizeOf;
+
+				//Read tag size
+				std::memcpy(v20->header.size, &data[currentPosition], id3v2HeaderTagSizeFieldSizeOf);
+				currentPosition += id3v2HeaderTagSizeFieldSizeOf;
+			}
+
+			// ID3v2.0 compression is not officially defined in the specification, therefore compressed tags should be ignored
+			if(v20->header.isCompressed() == true){
+				delete v20;
+				return id3;
+			}
+
+			// Define fixed byte sizes from the ID3v2.0 frame header layout:
+			// identifier[3] + size[3]
+			const uint32_t id3v20FrameHeaderIdentifierSizeOf = 3;
+			const uint32_t id3v20FrameHeaderSizeSizeOf = 3;
+			const uint32_t id3v20FrameHeaderTotalSizeOf = id3v20FrameHeaderIdentifierSizeOf + id3v20FrameHeaderSizeSizeOf;
+
+			// Calculate the position where frames end based on the tag size specified plus the size of the header
+			const uint32_t tagEndPosition = currentPosition + v20->header.getTagSize();
 
 			// Iterate through frames until the end of data
-			while(currentPosition < tagSize){
+			while(currentPosition < tagEndPosition){
+				// Check if there are enough bytes for frame header
+				if(currentPosition + id3v20FrameHeaderTotalSizeOf > tagEndPosition){
+					break;
+				}
+
 				ID3v20Frame* frame = new ID3v20Frame();
 
-				// Read frame header
-				//std::memcpy(&frame->header, &data[currentPosition], sizeof(ID3v20FrameHeader));
-				frame->header = *reinterpret_cast<ID3v20FrameHeader*>(&data[currentPosition]);
-				currentPosition += sizeof(ID3v20FrameHeader);
+				{// Read frame header
 
-				// Determine frame size and allocate memory for frame data
+					// Read identifier
+					std::memcpy(frame->header.identifier, &data[currentPosition], id3v20FrameHeaderIdentifierSizeOf);
+					currentPosition += id3v20FrameHeaderIdentifierSizeOf;
+
+					// Read size
+					std::memcpy(frame->header.size, &data[currentPosition], id3v20FrameHeaderSizeSizeOf);
+					currentPosition += id3v20FrameHeaderSizeSizeOf;
+				}
+
+				// Padding check (important for ID3v2.0)
+				// ID3v2.0 tags may contain a padding area at the end of the frames section,
+				// consisting of zeroed bytes (0x00). When the frame identifier is 0x000000,
+				// it indicates the start of this padding region, meaning no more valid frames follow.
+				if(frame->header.identifier[0] == 0x00 && frame->header.identifier[1] == 0x00 && frame->header.identifier[2] == 0x00){
+					delete frame;
+					break;
+				}
+
+				// Get frame size
 				uint32_t frameSize = frame->header.getFrameSize();
+
+				// Invalid frame size
+				if(frameSize == 0){
+					delete frame;
+					continue;
+				}
+
+				// Frame must fit inside tag
+				if(currentPosition + frameSize > tagEndPosition){
+					delete frame;
+					break;
+				}
+
+				// Allocate frame data
 				frame->data = new uint8_t[frameSize];
 
 				// Read frame data

@@ -10,7 +10,10 @@ endif()
 
 # Application executables
 set(APPLICATIONS
-    id3_scan_id3
+    id3_scan_music
+    id3_scan_band
+    mp3_scan_music
+    mp3_scan_band
     id3_remove_id3v1
     id3_remove_id3v2
     id3_full_process
