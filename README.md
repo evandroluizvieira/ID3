@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![MSYS64](https://img.shields.io/badge/Compiler-MSYS64_MinGW64-blue)](https://www.msys2.org/)
 [![Documentation](https://img.shields.io/badge/docs-Doxygen-blue.svg)](https://evandroluizvieira.github.io/ID3/)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/evandroluizvieira/ID3/releases)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/evandroluizvieira/ID3/releases)
 
 ## Overview
 ID3 is a C++ library for reading, writing, and manipulating ID3 tags in MP3 files. It provides comprehensive support for both ID3v1 (v1.0, v1.1) and ID3v2 (v2.0, v2.3, v2.4) tag formats, enabling full control over MP3 metadata.
