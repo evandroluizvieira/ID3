@@ -109,8 +109,186 @@ ID3 MP3File::getID3() const{
 
 		if(hasID3v24() == true){
 			ID3v24* v24 = new ID3v24();
-			//std::memcpy(&v24->header, data, sizeof(ID3v2HeaderBase));
-			v24->header = *reinterpret_cast<ID3v24Header*>(data);
+
+			uint32_t currentPosition = 0;
+
+			{// Read header
+
+				// Define fixed byte sizes from the ID3v2.4 header
+				// tag[3] + major_version[1] + revision_number[1] + flags[1] + size[4]
+				const uint32_t id3v2HeaderTagSizeOf = 3;
+				const uint32_t id3v2HeaderMajorVersionSizeOf = 1;
+				const uint32_t id3v2HeaderRevisionNumberSizeOf = 1;
+				const uint32_t id3v2HeaderFlagsSizeOf = 1;
+				const uint32_t id3v2HeaderTagSizeFieldSizeOf = 4;
+
+				//Read tag
+				std::memcpy(v24->header.tag, &data[currentPosition], id3v2HeaderTagSizeOf);
+				currentPosition += id3v2HeaderTagSizeOf;
+
+				//Read major version
+				std::memcpy(&v24->header.major_version, &data[currentPosition], id3v2HeaderMajorVersionSizeOf);
+				currentPosition += id3v2HeaderMajorVersionSizeOf;
+
+				//Read revision_number
+				std::memcpy(&v24->header.revision_number, &data[currentPosition], id3v2HeaderRevisionNumberSizeOf);
+				currentPosition += id3v2HeaderRevisionNumberSizeOf;
+
+				//Read flags
+				std::memcpy(&v24->header.flags, &data[currentPosition], id3v2HeaderFlagsSizeOf);
+				currentPosition += id3v2HeaderFlagsSizeOf;
+
+				//Read tag size (synchsafe)
+				std::memcpy(v24->header.size, &data[currentPosition], id3v2HeaderTagSizeFieldSizeOf);
+				currentPosition += id3v2HeaderTagSizeFieldSizeOf;
+			}
+
+			// Extended header (ID3v2.4 only if flag is set)
+			if(v24->header.hasExtendedHeader() == true){
+				v24->extendedHeader = new ID3v24ExtendedHeader();
+
+				// Read extended header size (4 bytes synchsafe)
+				uint8_t extSizeSynch[4];
+				std::memcpy(extSizeSynch, &data[currentPosition], 4);
+				currentPosition += 4;
+
+				// Convert synchsafe to plain integer (rest size after these 4 bytes)
+				uint32_t extSize = 0;
+				extSize |= static_cast<uint32_t>(extSizeSynch[0]) << 21;
+				extSize |= static_cast<uint32_t>(extSizeSynch[1]) << 14;
+				extSize |= static_cast<uint32_t>(extSizeSynch[2]) << 7;
+				extSize |= extSizeSynch[3];
+				v24->extendedHeader->size = extSize;
+
+				// Number of flag bytes (must be 1)
+				std::memcpy(&v24->extendedHeader->flagBytes, &data[currentPosition], 1);
+				currentPosition += 1;
+
+				// Extended flags byte
+				std::memcpy(&v24->extendedHeader->flags, &data[currentPosition], 1);
+				currentPosition += 1;
+
+				// Flag b - update (has a length byte, always 0)
+				if(v24->extendedHeader->isUpdate() == true){
+					uint8_t updateLen = 0;
+					std::memcpy(&updateLen, &data[currentPosition], 1);
+					currentPosition += 1;
+				}
+
+				// Flag c - CRC data present
+				if(v24->extendedHeader->hasCRC() == true){
+					uint8_t crcLen = 0;
+					std::memcpy(&crcLen, &data[currentPosition], 1);
+					currentPosition += 1;
+					if(crcLen == 5){
+						uint8_t crcSynch[5];
+						std::memcpy(crcSynch, &data[currentPosition], 5);
+						currentPosition += 5;
+						// Convert 35-bit synchsafe to 32-bit integer
+						uint32_t crcVal = 0;
+						crcVal |= static_cast<uint32_t>(crcSynch[0]) << 28;
+						crcVal |= static_cast<uint32_t>(crcSynch[1]) << 21;
+						crcVal |= static_cast<uint32_t>(crcSynch[2]) << 14;
+						crcVal |= static_cast<uint32_t>(crcSynch[3]) << 7;
+						crcVal |= crcSynch[4];
+						v24->extendedHeader->setCRC(crcVal);
+					} else {
+						v24->extendedHeader->removeCRC();
+					}
+				}
+
+				// Flag d - restrictions (skip)
+				if((v24->extendedHeader->flags & 0x10) != 0){
+					uint8_t restrictionLen = 0;
+					std::memcpy(&restrictionLen, &data[currentPosition], 1);
+					currentPosition += 1;
+					currentPosition += restrictionLen;
+				}
+
+				// Ensure correct position (extended header total size = 4 + extSize)
+				currentPosition = 10 + 4 + extSize;
+			}
+
+			// Define fixed byte sizes from the ID3v2.4 frame header layout:
+			// identifier[4] + size[4] + flags[2]
+			const uint32_t id3v24FrameHeaderIdentifierSizeOf = 4;
+			const uint32_t id3v24FrameHeaderSizeSizeOf = 4;
+			const uint32_t id3v24FrameHeaderFlagsSizeOf = 2;
+			const uint32_t id3v24FrameHeaderTotalSizeOf = id3v24FrameHeaderIdentifierSizeOf + id3v24FrameHeaderSizeSizeOf + id3v24FrameHeaderFlagsSizeOf;
+
+			// Calculate end of tag region (adjust for footer if present)
+			uint32_t tagEndPosition = currentPosition + v24->header.getTagSize();
+			if(v24->header.hasFooter() == true){
+				tagEndPosition -= 10; // footer occupies last 10 bytes
+			}
+
+			// Iterate through frames
+			while(currentPosition < tagEndPosition){
+				// Check if there is enough space for a frame header
+				if(currentPosition + id3v24FrameHeaderTotalSizeOf > tagEndPosition){
+					break;
+				}
+
+				ID3v24Frame* frame = new ID3v24Frame();
+
+				{// Read frame header
+					// Read identifier
+					std::memcpy(frame->header.identifier, &data[currentPosition], id3v24FrameHeaderIdentifierSizeOf);
+					currentPosition += id3v24FrameHeaderIdentifierSizeOf;
+
+					// Read size (synchsafe)
+					std::memcpy(frame->header.size, &data[currentPosition], id3v24FrameHeaderSizeSizeOf);
+					currentPosition += id3v24FrameHeaderSizeSizeOf;
+
+					// Read flags
+					std::memcpy(frame->header.flags, &data[currentPosition], id3v24FrameHeaderFlagsSizeOf);
+					currentPosition += id3v24FrameHeaderFlagsSizeOf;
+				}
+
+				// Padding check (important for ID3v2.4)
+				// When the frame identifier is all zeros, it indicates the start of padding
+				if(frame->header.identifier[0] == 0x00 && frame->header.identifier[1] == 0x00 &&
+				frame->header.identifier[2] == 0x00 && frame->header.identifier[3] == 0x00){
+					delete frame;
+					break;
+				}
+
+				// Get frame size (decoded from synchsafe)
+				uint32_t frameSize = frame->header.getFrameSize();
+
+				// Invalid frame size
+				if(frameSize == 0){
+					delete frame;
+					continue;
+				}
+
+				// Frame must fit inside tag
+				if(currentPosition + frameSize > tagEndPosition){
+					delete frame;
+					break;
+				}
+
+				// Allocate frame data
+				frame->data = new uint8_t[frameSize];
+
+				// Read frame data
+				std::memcpy(frame->data, &data[currentPosition], frameSize);
+				currentPosition += frameSize;
+
+				// Store frame in ID3v24 object
+				v24->frames.push_back(frame);
+			}
+
+			// Read footer if present
+			if(v24->header.hasFooter() == true){
+				v24->footer = new ID3v24Footer();
+				const uint32_t footerOffset = 10 + v24->header.getTagSize(); // start of footer
+				std::memcpy(v24->footer->identifier, &data[footerOffset], 3);
+				v24->footer->major_version = data[footerOffset + 3];
+				v24->footer->revision = data[footerOffset + 4];
+				v24->footer->flags = data[footerOffset + 5];
+				std::memcpy(v24->footer->size, &data[footerOffset + 6], 4);
+			}
 
 			id3.v2.v24 = v24;
 		} else if(hasID3v23() == true){
