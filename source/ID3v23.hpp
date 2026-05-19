@@ -176,34 +176,6 @@ public:
     virtual bool isCompressed() const override;
 
     /**
-     * @brief Set the file alter preservation flag (bit 5 of flags[0]).
-     *
-     * @param preserve Whether to set or clear the flag.
-     */
-    virtual void setFileAlterPreservation(bool preserve) override;
-
-    /**
-     * @brief Check if the file alter preservation flag is set.
-     *
-     * @return true if the flag is set, false otherwise.
-     */
-    virtual bool getFileAlterPreservation() const override;
-
-    /**
-     * @brief Set the tag alter preservation flag (bit 6 of flags[0]).
-     *
-     * @param preserve Whether to set or clear the flag.
-     */
-    virtual void setTagAlterPreservation(bool preserve) override;
-
-    /**
-     * @brief Check if the tag alter preservation flag is set.
-     *
-     * @return true if the flag is set, false otherwise.
-     */
-    virtual bool getTagAlterPreservation() const override;
-
-    /**
      * @brief Set the read‑only flag (bit 7 of flags[0]).
      *
      * @param readOnly Whether to set or clear the flag.

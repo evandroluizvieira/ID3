@@ -55,8 +55,6 @@ uint32_t ID3v23ExtendedHeader::getSize() const{
 	return size + sizeFieldLength;
 }
 
-#include "ID3v23FrameHeader.hpp"
-
 ID3v23FrameHeader::ID3v23FrameHeader() :
     ID3v2FrameHeaderBase(){
 }
@@ -100,28 +98,6 @@ void ID3v23FrameHeader::setCompressed(bool compressed){
 
 bool ID3v23FrameHeader::isCompressed() const{
     return (flags[0] & 0x08) != 0;
-}
-
-void ID3v23FrameHeader::setFileAlterPreservation(bool preserve){
-    if(preserve)
-        flags[0] |= 0x20;
-    else
-        flags[0] &= ~0x20;
-}
-
-bool ID3v23FrameHeader::getFileAlterPreservation() const{
-    return (flags[0] & 0x20) != 0;
-}
-
-void ID3v23FrameHeader::setTagAlterPreservation(bool preserve){
-    if(preserve)
-        flags[0] |= 0x40;
-    else
-        flags[0] &= ~0x40;
-}
-
-bool ID3v23FrameHeader::getTagAlterPreservation() const{
-    return (flags[0] & 0x40) != 0;
 }
 
 void ID3v23FrameHeader::setReadOnly(bool readOnly){
