@@ -298,15 +298,6 @@ void ID3v23::setYear(const std::string& year){
 }
 
 std::string ID3v23::getComment() const{
-	uint8_t identifier[4] = {'C', 'O', 'M', 'M'};
-	ID3v23Frame* frame = getFrame(identifier);
-	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
-	}
-	return "";
-}
-
-std::string ID3v23::getComment() const{
     uint8_t identifier[4] = {'C', 'O', 'M', 'M'};
     ID3v23Frame* frame = getFrame(identifier);
     if(!frame || !frame->data){
