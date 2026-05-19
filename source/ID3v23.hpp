@@ -31,34 +31,6 @@ class ID3v23Header : public ID3v2HeaderBase{
 		 * @brief Default virtual destructor that calls ID3v2HeaderBase::~ID3v2HeaderBase().
 		 */
 		virtual ~ID3v23Header();
-
-		/**
-		 * @brief Set the extended header flag.
-		 *
-		 * @param hasExtendedHeader Whether to set or clear the extended header flag.
-		 */
-		void setExtendedHeader(bool hasExtendedHeader);
-
-		/**
-		 * @brief Check if extended header flag is set.
-		 *
-		 * @return true if the extended header flag is set, false otherwise.
-		 */
-		bool hasExtendedHeader() const;
-
-		/**
-		 * @brief Set the experimental indicator flag.
-		 *
-		 * @param isExperimental Whether to set or clear the experimental indicator flag.
-		 */
-		void setExperimental(bool isExperimental);
-
-		/**
-		 * @brief Check if experimental indicator flag is set.
-		 *
-		 * @return true if the experimental indicator flag is set, false otherwise.
-		 */
-		bool isExperimental() const;
 };
 
 /**
@@ -112,148 +84,152 @@ class ID3v23ExtendedHeader{
 		uint32_t getSize() const;
 
 	public:
+		/**
+		 * @var uint32_t ID3v23ExtendedHeader::size
+		 *
+		 * @brief Extended header size excluding the 4 size bytes (normal integer).
+		 */
 		uint32_t size;
+
+		/**
+		 * @var uint16_t ID3v23ExtendedHeader::flags
+		 *
+		 * @brief Flags field (16 bits). Bit 15 (0x8000) indicates CRC data present.
+		 */
 		uint16_t flags;
+
+		/**
+		 * @var uint32_t ID3v23ExtendedHeader::padding
+		 *
+		 * @brief Size of padding in bytes.
+		 */
 		uint32_t padding;
+
+		/**
+		 * @var uint32_t* ID3v23ExtendedHeader::crc
+		 *
+		 * @brief Pointer to CRC-32 data (4 bytes). nullptr if not present.
+		 */
 		uint32_t* crc;
 };
 
 /**
  * @class ID3v23FrameHeader
  *
- * @brief Represents the header structure for an ID3v2.3 frame header that contains 4 bytes identifier of the frame, 4 bytes size of the frame, and 2 bytes flags.
+ * @brief Represents the header structure for an ID3v2.3 frame.
+ *        Inherits common fields and implements version‑specific methods.
+ *
+ * @see ID3v2FrameHeaderBase
  */
-class ID3v23FrameHeader{
-	public:
-		/**
-		 * @brief Default constructor that initializes the object with clear data.
-		 */
-		ID3v23FrameHeader();
+class ID3v23FrameHeader : public ID3v2FrameHeaderBase{
+public:
+    /**
+     * @brief Default constructor that initializes the object with clear data.
+     */
+    ID3v23FrameHeader();
 
-		/**
-		 * @brief Default virtual destructor.
-		 */
-		virtual ~ID3v23FrameHeader();
+    /**
+     * @brief Default virtual destructor.
+     */
+    virtual ~ID3v23FrameHeader();
 
-		/**
-		 * @brief Retrieves the size of the frame excluding the header.
-		 *
-		 * @return The size of the frame.
-		 */
-		uint32_t getFrameSize() const;
+    /**
+     * @brief Retrieves the size of the frame excluding the header (big‑endian).
+     *
+     * @return The size of the frame.
+     */
+    virtual uint32_t getFrameSize() const override;
 
-		/**
-		 * @brief Sets the size of the frame excluding the header.
-		 *
-		 * @param size The new size of the frame.
-		 */
-		void setFrameSize(uint32_t size);
+    /**
+     * @brief Sets the size of the frame excluding the header (big‑endian).
+     *
+     * @param size The new size of the frame.
+     */
+    virtual void setFrameSize(uint32_t size) override;
 
-		/**
-		 * @brief Set the tag alter preservation flag.
-		 *
-		 * @param preserve Whether to set or clear the flag.
-		 */
-		void setTagAlterPreservation(bool preserve);
+    /**
+     * @brief Set the encryption flag (bit 0 of flags[0]).
+     *
+     * @param encrypted Whether to set or clear the flag.
+     */
+    virtual void setEncrypted(bool encrypted) override;
 
-		/**
-		 * @brief Check if the tag alter preservation flag is set.
-		 *
-		 * @return true if the flag is set, false otherwise.
-		 */
-		bool getTagAlterPreservation() const;
+    /**
+     * @brief Check if the encryption flag is set.
+     *
+     * @return true if the flag is set, false otherwise.
+     */
+    virtual bool isEncrypted() const override;
 
-		/**
-		 * @brief Set the file alter preservation flag.
-		 *
-		 * @param preserve Whether to set or clear the flag.
-		 */
-		void setFileAlterPreservation(bool preserve);
+    /**
+     * @brief Set the compression flag (bit 3 of flags[0]).
+     *
+     * @param compressed Whether to set or clear the flag.
+     */
+    virtual void setCompressed(bool compressed) override;
 
-		/**
-		 * @brief Check if the file alter preservation flag is set.
-		 *
-		 * @return true if the flag is set, false otherwise.
-		 */
-		bool getFileAlterPreservation() const;
+    /**
+     * @brief Check if the compression flag is set.
+     *
+     * @return true if the flag is set, false otherwise.
+     */
+    virtual bool isCompressed() const override;
 
-		/**
-		 * @brief Set the read-only flag.
-		 *
-		 * @param readOnly Whether to set or clear the flag.
-		 */
-		void setReadOnly(bool readOnly);
+    /**
+     * @brief Set the file alter preservation flag (bit 5 of flags[0]).
+     *
+     * @param preserve Whether to set or clear the flag.
+     */
+    virtual void setFileAlterPreservation(bool preserve) override;
 
-		/**
-		 * @brief Check if the read-only flag is set.
-		 *
-		 * @return true if the flag is set, false otherwise.
-		 */
-		bool isReadOnly() const;
+    /**
+     * @brief Check if the file alter preservation flag is set.
+     *
+     * @return true if the flag is set, false otherwise.
+     */
+    virtual bool getFileAlterPreservation() const override;
 
-		/**
-		 * @brief Set the compression flag.
-		 *
-		 * @param compressed Whether to set or clear the flag.
-		 */
-		void setCompressed(bool compressed);
+    /**
+     * @brief Set the tag alter preservation flag (bit 6 of flags[0]).
+     *
+     * @param preserve Whether to set or clear the flag.
+     */
+    virtual void setTagAlterPreservation(bool preserve) override;
 
-		/**
-		 * @brief Check if the compression flag is set.
-		 *
-		 * @return true if the flag is set, false otherwise.
-		 */
-		bool isCompressed() const;
+    /**
+     * @brief Check if the tag alter preservation flag is set.
+     *
+     * @return true if the flag is set, false otherwise.
+     */
+    virtual bool getTagAlterPreservation() const override;
 
-		/**
-		 * @brief Set the encryption flag.
-		 *
-		 * @param encrypted Whether to set or clear the flag.
-		 */
-		void setEncrypted(bool encrypted);
+    /**
+     * @brief Set the read‑only flag (bit 7 of flags[0]).
+     *
+     * @param readOnly Whether to set or clear the flag.
+     */
+    virtual void setReadOnly(bool readOnly) override;
 
-		/**
-		 * @brief Check if the encryption flag is set.
-		 *
-		 * @return true if the flag is set, false otherwise.
-		 */
-		bool isEncrypted() const;
+    /**
+     * @brief Check if the read‑only flag is set.
+     *
+     * @return true if the flag is set, false otherwise.
+     */
+    virtual bool isReadOnly() const override;
 
-		/**
-		 * @brief Set the grouping identity flag.
-		 *
-		 * @param group Whether to set or clear the flag.
-		 */
-		void setGroupingIdentity(bool group);
+    /**
+     * @brief Set the grouping identity flag (bit 7 of flags[1]).
+     *
+     * @param group Whether to set or clear the flag.
+     */
+    virtual void setGroupingIdentity(bool group) override;
 
-		/**
-		 * @brief Check if the grouping identity flag is set.
-		 *
-		 * @return true if the flag is set, false otherwise.
-		 */
-		bool isGroupingIdentity() const;
-
-	public:
-		/**
-		 * @var uint8_t ID3v23FrameHeader::identifier[4]
-		 *
-		 * @brief 4 character identifier for the frame type.
-		 */
-		uint8_t identifier[4];
-
-		/**
-		 * @var uint8_t ID3v23FrameHeader::size[4]
-		 *
-		 * @brief 4 byte size descriptor for the frame.
-		 */
-		uint8_t size[4];
-
-		/**
-		 * @var uint8_t ID3v23FrameHeader::flags[2]
-		 *
-		 * @brief 2 byte flags for the frame.
-		 */
-		uint8_t flags[2];
+    /**
+     * @brief Check if the grouping identity flag is set.
+     *
+     * @return true if the flag is set, false otherwise.
+     */
+    virtual bool isGroupingIdentity() const override;
 };
 
 /**
@@ -261,14 +237,14 @@ class ID3v23FrameHeader{
  *
  * @brief Structure representing an ID3v2.3 frame, consisting of a header and data.
  */
-struct ID3v23Frame {
+struct ID3v23Frame{
     /**
      * @brief Default constructor that initializes the object with clear data.
      */
     ID3v23Frame();
 
     /**
-     * @brief Default virtual destructor that releases ID3v23Frame::data if has any and clear ID3v23Frame::header.
+     * @brief Default virtual destructor that releases data and clears header.
      */
     virtual ~ID3v23Frame();
 
@@ -305,8 +281,6 @@ class ID3v23{
 		 * @brief Default virtual destructor.
 		 */
 		virtual ~ID3v23();
-
-		void print();
 
 		/**
 		 * @brief Search through the vector of frames to find a frame with the given identifier.

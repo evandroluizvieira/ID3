@@ -1,6 +1,6 @@
 // GTest will be downloaded by CMake via FetchContent when the project is built
 // If you see IntelliSense errors, run CMake first or install GTest locally
-#include <gtest/gtest.h>
+//#include <gtest/gtest.h>
 
 // Empty test to verify infrastructure works
 TEST(InfrastructureTest, BasicAssertions) {

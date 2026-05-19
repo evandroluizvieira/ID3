@@ -16,7 +16,9 @@ class ID3v23;
 class ID3v24;
 
 /**
- * @class ID3v2 Header base header for versions 2.0, 2.3 and 2.4.
+ * @class ID3v2Header
+ * 
+ * @brief Header for versions 2.0, 2.3 and 2.4.
  *
  * @note This class could be a struct as it always occupies 10 bytes in the file.
  *
@@ -35,6 +37,34 @@ class ID3v2HeaderBase{
  	 	 *@brief Virtual destructor that clears all members.
 		 */
 		virtual ~ID3v2HeaderBase();
+
+		/**
+		 * @brief Set the experimental indicator flag.
+		 *
+		 * @param isExperimental When true, sets bit 5 of the flags byte; when false, clears it.
+		 */
+		void setExperimental(bool isExperimental);
+
+		/**
+		 * @brief Check if experimental indicator flag is set.
+		 *
+		 * @return true if bit 5 of the flags byte is set, false otherwise.
+		 */
+		bool isExperimental() const;
+
+				/**
+		 * @brief Set the extended header flag.
+		 *
+		 * @param hasExtendedHeader When true, sets bit 6 of the flags byte; when false, clears it.
+		 */
+		void setExtendedHeader(bool hasExtendedHeader);
+
+		/**
+		 * @brief Check if extended header flag is set.
+		 *
+		 * @return true if bit 6 of the flags byte is set, false otherwise.
+		 */
+		bool hasExtendedHeader() const;
 
 		/**
 		 * @brief: Check if unsynchronization flag is set.
@@ -107,6 +137,157 @@ class ID3v2HeaderBase{
 		 * @brief ID3 tag size, 28-bit encoded as 4 bytes.
 		 */
 		uint8_t size[4];
+};
+
+/**
+ * @class ID3v2FrameHeaderBase
+ *
+ * @brief Frame headers base class for versions 2.3 and 2.4.
+ *
+ * @note This class could be a struct as it always occupies 10 bytes in the file.
+ *
+ * @see ID3v23FrameHeader
+ * @see ID3v24FrameHeader
+ */
+class ID3v2FrameHeaderBase {
+public:
+    /**
+     * @brief Default constructor that clears all members.
+     */
+    ID3v2FrameHeaderBase();
+
+    /**
+     * @brief Virtual destructor that clears all members.
+     */
+    virtual ~ID3v2FrameHeaderBase();
+
+    /**
+     * @brief Set the tag alter preservation flag.
+     *
+     * @param preserve When true, sets bit 6 of the first flag byte; when false, clears it.
+     */
+    void setTagAlterPreservation(bool preserve);
+
+    /**
+     * @brief Check if the tag alter preservation flag is set.
+     *
+     * @return true if bit 6 of the first flag byte is set, false otherwise.
+     */
+    bool getTagAlterPreservation() const;
+
+    /**
+     * @brief Set the file alter preservation flag.
+     *
+     * @param preserve When true, sets bit 5 of the first flag byte; when false, clears it.
+     */
+    void setFileAlterPreservation(bool preserve);
+
+    /**
+     * @brief Check if the file alter preservation flag is set.
+     *
+     * @return true if bit 5 of the first flag byte is set, false otherwise.
+     */
+    bool getFileAlterPreservation() const;
+
+    /**
+     * @brief Retrieves the size of the frame excluding the header.
+     *
+     * @note This method is pure virtual because the interpretation of the
+     *       four size bytes differs between ID3v2.3 (normal integer) and
+     *       ID3v2.4 (synchsafe integer). Derived classes must implement it.
+     *
+     * @return The size of the frame data (in bytes).
+     */
+    virtual uint32_t getFrameSize() const = 0;
+
+    /**
+     * @brief Sets the size of the frame excluding the header.
+     *
+     * @param size The new size of the frame (in bytes).
+     *
+     * @note Pure virtual because the storage format differs between versions.
+     */
+    virtual void setFrameSize(uint32_t size) = 0;
+
+    /**
+     * @brief Set the read‑only flag.
+     *
+     * @param readOnly When true, sets the read‑only flag; when false, clears it.
+     *
+     * @note Pure virtual because the flag position differs between versions.
+     */
+    virtual void setReadOnly(bool readOnly) = 0;
+
+    /**
+     * @brief Check if the read‑only flag is set.
+     *
+     * @return true if the read‑only flag is set, false otherwise.
+     */
+    virtual bool isReadOnly() const = 0;
+
+    /**
+     * @brief Set the compression flag.
+     *
+     * @param compressed When true, sets the compression flag; when false, clears it.
+     */
+    virtual void setCompressed(bool compressed) = 0;
+
+    /**
+     * @brief Check if the compression flag is set.
+     *
+     * @return true if the compression flag is set, false otherwise.
+     */
+    virtual bool isCompressed() const = 0;
+
+    /**
+     * @brief Set the encryption flag.
+     *
+     * @param encrypted When true, sets the encryption flag; when false, clears it.
+     */
+    virtual void setEncrypted(bool encrypted) = 0;
+
+    /**
+     * @brief Check if the encryption flag is set.
+     *
+     * @return true if the encryption flag is set, false otherwise.
+     */
+    virtual bool isEncrypted() const = 0;
+
+    /**
+     * @brief Set the grouping identity flag.
+     *
+     * @param group When true, sets the grouping identity flag; when false, clears it.
+     */
+    virtual void setGroupingIdentity(bool group) = 0;
+
+    /**
+     * @brief Check if the grouping identity flag is set.
+     *
+     * @return true if the grouping identity flag is set, false otherwise.
+     */
+    virtual bool isGroupingIdentity() const = 0;
+
+public:
+    /**
+     * @var uint8_t ID3v2FrameHeaderBase::identifier[4]
+     *
+     * @brief 4 character identifier for the frame type (e.g., "TIT2", "COMM").
+     */
+    uint8_t identifier[4];
+
+    /**
+     * @var uint8_t ID3v2FrameHeaderBase::size[4]
+     *
+     * @brief 4 byte size descriptor of the frame (interpretation depends on version).
+     */
+    uint8_t size[4];
+
+    /**
+     * @var uint8_t ID3v2FrameHeaderBase::flags[2]
+     *
+     * @brief 2 byte flags for the frame (bits are version‑specific).
+     */
+    uint8_t flags[2];
 };
 
 /**
