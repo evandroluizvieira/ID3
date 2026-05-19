@@ -21,6 +21,30 @@ ID3v2HeaderBase::~ID3v2HeaderBase(){
 	size[3] = 0;
 }
 
+void ID3v2HeaderBase::setExperimental(bool isExperimental){
+    if(isExperimental){
+        flags |= 0x20;
+    }else{
+        flags &= ~0x20;
+    }
+}
+
+bool ID3v2HeaderBase::isExperimental() const{
+    return (flags & 0x20) != 0;
+}
+
+void ID3v2HeaderBase::setExtendedHeader(bool hasExtendedHeader){
+    if(hasExtendedHeader){
+        flags |= 0x40;
+    }else{
+        flags &= ~0x40;
+    }
+}
+
+bool ID3v2HeaderBase::hasExtendedHeader() const{
+    return (flags & 0x40) != 0;
+}
+
 bool ID3v2HeaderBase::isUnsynchronized() const{
 	return (flags & 0x80) != 0;
 }
@@ -53,6 +77,47 @@ void ID3v2HeaderBase::setTagSize(uint32_t size){
 	this->size[1] = static_cast<uint8_t>((size >> 14) & 0x7F);
 	this->size[2] = static_cast<uint8_t>((size >>  7) & 0x7F);
 	this->size[3] = static_cast<uint8_t>( size        & 0x7F);
+}
+
+ID3v2FrameHeaderBase::ID3v2FrameHeaderBase() :
+    identifier{0, 0, 0, 0}, size{0, 0, 0, 0}, flags{0, 0} {
+}
+
+ID3v2FrameHeaderBase::~ID3v2FrameHeaderBase() {
+    identifier[0] = 0;
+    identifier[1] = 0;
+	identifier[2] = 0;
+    identifier[3] = 0;
+	size[0] = 0;
+    size[1] = 0;
+	size[2] = 0;
+    size[3] = 0;
+    flags[0] = 0;
+    flags[1] = 0;
+}
+
+void ID3v2FrameHeaderBase::setTagAlterPreservation(bool preserve) {
+    if (preserve) {
+        flags[0] |= 0x40;
+    } else {
+        flags[0] &= ~0x40;
+    }
+}
+
+bool ID3v2FrameHeaderBase::getTagAlterPreservation() const {
+    return (flags[0] & 0x40) != 0;
+}
+
+void ID3v2FrameHeaderBase::setFileAlterPreservation(bool preserve) {
+    if (preserve) {
+        flags[0] |= 0x20;
+    } else {
+        flags[0] &= ~0x20;
+    }
+}
+
+bool ID3v2FrameHeaderBase::getFileAlterPreservation() const {
+    return (flags[0] & 0x20) != 0;
 }
 
 ID3v2::ID3v2(){

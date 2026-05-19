@@ -45,10 +45,10 @@ class MP3FrameHeader {
 		 * @brief MPEG version enumeration.
 		 */
 		enum MPEGVersion {
-			MPEG25 = 0,  /**< MPEG version 2.5 */
-			Reserved = 1, /**< Reserved */
-			MPEG2 = 2,   /**< MPEG version 2.0 */
-			MPEG1 = 3    /**< MPEG version 1.0 */
+			MPEG25 = 0,		/**< MPEG version 2.5 */
+			Reserved = 1,	/**< Reserved */
+			MPEG2 = 2,		/**< MPEG version 2.0 */
+			MPEG1 = 3		/**< MPEG version 1.0 */
 		};
 
 		/**
