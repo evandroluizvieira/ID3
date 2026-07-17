@@ -7,10 +7,6 @@
 
 #include <cstring>
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 MP3File::MP3File() :
 	File(){
 
@@ -21,74 +17,87 @@ MP3File::~MP3File(){
 }
 
 bool MP3File::hasID3v10() const{
-	if(isEmpty() == true){
-		return false;
-	}
+    if(isEmpty() == true){
+        return false;
+    }
 
-	uint64_t sizeOfID3v10Data = sizeof(ID3v10Data);
-	if(size > sizeOfID3v10Data){
-		uint64_t i = size - sizeOfID3v10Data;
-		bool validLastCommentData = data[i + 126] == 0;
-		if(data[i] == 'T' && data[i + 1] == 'A' && data[i + 2] == 'G' && validLastCommentData == true){
-			return true;
-		}
-	}
+    uint64_t sizeOfID3v10Data = sizeof(ID3v10Data);
+    if(size >= sizeOfID3v10Data){
+        uint64_t i = size - sizeOfID3v10Data;
+        bool validHeader = data[i] == 'T' && data[i + 1] == 'A' && data[i + 2] == 'G';
+        bool isV11 = data[i + 125] == 0 && data[i + 126] != 0;
 
-	return false;
+        if(validHeader == true && isV11 == false){
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool MP3File::hasID3v11() const{
-	if(isEmpty() == true){
-		return false;
-	}
+    if(isEmpty() == true){
+        return false;
+    }
 
-	uint64_t sizeOfID3v11Data = sizeof(ID3v11Data);
-	if(size > sizeOfID3v11Data){
-		uint64_t i = size - sizeOfID3v11Data;
-		bool validLastCommentData = data[i + 125] == 0;
-		bool validTrack = data[i + 126] != 0;
-		if(data[i] == 'T' && data[i + 1] == 'A' && data[i + 2] == 'G' && validLastCommentData == true && validTrack == true){
-			return true;
-		}
-	}
+    uint64_t sizeOfID3v11Data = sizeof(ID3v11Data);
+    if(size >= sizeOfID3v11Data){
+        uint64_t i = size - sizeOfID3v11Data;
+        bool validHeader = data[i] == 'T' && data[i + 1] == 'A' && data[i + 2] == 'G';
+        bool validLastCommentData = data[i + 125] == 0;
+        bool validTrack = data[i + 126] != 0;
 
-	return false;
+        if(validHeader == true && validLastCommentData == true && validTrack == true){
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool MP3File::hasID3v20() const{
-	if(isEmpty() == true){
-		return false;
-	}
+    if(isEmpty() == true){
+        return false;
+    }
 
-	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 2 && data[4] == 0){
-		return true;
-	}else{
-		return false;
-	}
+    bool hasHeaderSize = size >= 10;
+    if(!hasHeaderSize){
+        return false;
+    }
+
+    bool hasID3Tag = data[0] == 'I' && data[1] == 'D' && data[2] == '3';
+    bool isV20 = data[3] == 2 && data[4] == 0;
+    return hasID3Tag && isV20;
 }
 
 bool MP3File::hasID3v23() const{
-	if(isEmpty() == true){
-		return false;
-	}
+    if(isEmpty() == true){
+        return false;
+    }
 
-	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 3 && data[4] == 0){
-		return true;
-	}else{
-		return false;
-	}
+    bool hasHeaderSize = size >= 10;
+    if(!hasHeaderSize){
+        return false;
+    }
+
+    bool hasID3Tag = data[0] == 'I' && data[1] == 'D' && data[2] == '3';
+    bool isV23 = data[3] == 3 && data[4] == 0;
+    return hasID3Tag && isV23;
 }
 
 bool MP3File::hasID3v24() const{
-	if(isEmpty() == true){
-		return false;
-	}
+    if(isEmpty() == true){
+        return false;
+    }
 
-	if(size >= 5 && data[0] == 'I' && data[1] == 'D' && data[2] == '3' && data[3] == 4 && data[4] == 0){
-		return true;
-	}else{
-		return false;
-	}
+    bool hasHeaderSize = size >= 10;
+    if(!hasHeaderSize){
+        return false;
+    }
+
+    bool hasID3Tag = data[0] == 'I' && data[1] == 'D' && data[2] == '3';
+    bool isV24 = data[3] == 4 && data[4] == 0;
+    return hasID3Tag && isV24;
 }
 
 ID3 MP3File::getID3() const{
@@ -555,7 +564,7 @@ void MP3File::setID3(const ID3& id3){
 		uint8_t* newData = new uint8_t[newSize];
 
 		std::memcpy(newData, data, size);
-		std::memcpy(&newData[size - 1], &id3v11->data, sizeOfID3v11Data);
+		std::memcpy(&newData[size], &id3v11->data, sizeOfID3v11Data);
 
 		clear();
 
@@ -567,7 +576,7 @@ void MP3File::setID3(const ID3& id3){
 		uint8_t* newData = new uint8_t[newSize];
 
 		std::memcpy(newData, data, size);
-		std::memcpy(&newData[size - 1], &id3v10->data, sizeOfID3v10Data);
+		std::memcpy(&newData[size], &id3v10->data, sizeOfID3v10Data);
 
 		clear();
 
@@ -594,22 +603,326 @@ void MP3File::setID3(const ID3& id3){
 	ID3v24* id3v24 = id3.v2.v24;
 
 	if(id3v24 != nullptr){
-		//TODO set ID3 v24 tag to 'data'
+		// Remove any existing ID3v2 tag first
+		if(hasID3v24() || hasID3v23() || hasID3v20()){
+			uint32_t tagSize = 0;
+			if(hasID3v24()){
+				uint8_t sizeSynch[4];
+				std::memcpy(sizeSynch, &data[6], 4);
+				tagSize = (sizeSynch[0] << 21) | (sizeSynch[1] << 14) | (sizeSynch[2] << 7) | sizeSynch[3];
+				tagSize += 10;
+			}else if(hasID3v23()){
+				uint8_t sizeBytes[4];
+				std::memcpy(sizeBytes, &data[6], 4);
+				tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+				tagSize += 10;
+			}else if(hasID3v20()){
+				uint8_t sizeBytes[4];
+				std::memcpy(sizeBytes, &data[6], 4);
+				tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+				tagSize += 10;
+			}
+			if(tagSize < size){
+				uint64_t newSize = size - tagSize;
+				uint8_t* newData = new uint8_t[newSize];
+				std::memcpy(newData, &data[tagSize], newSize);
+				clear();
+				data = newData;
+				size = newSize;
+			}
+		}
+
+		// Build tag data size
+		uint32_t tagDataSize = 0;
+		if(id3v24->extendedHeader) tagDataSize += id3v24->extendedHeader->getSize();
+		for(auto& f : id3v24->frames) tagDataSize += 10 + f->header.getFrameSize();
+		if(id3v24->header.hasFooter()) tagDataSize += 10;
+
+		// Total tag size including header
+		uint32_t totalTagSize = 10 + tagDataSize;
+
+		// Allocate new buffer
+		uint64_t newSize = size + totalTagSize;
+		uint8_t* newData = new uint8_t[newSize];
+
+		// Write header (synchsafe size)
+		std::memcpy(&newData[0], id3v24->header.tag, 3);
+		newData[3] = id3v24->header.major_version;
+		newData[4] = id3v24->header.revision_number;
+		newData[5] = id3v24->header.flags;
+		uint8_t sizeSynch[4];
+		sizeSynch[0] = (tagDataSize >> 21) & 0x7F;
+		sizeSynch[1] = (tagDataSize >> 14) & 0x7F;
+		sizeSynch[2] = (tagDataSize >> 7) & 0x7F;
+		sizeSynch[3] = tagDataSize & 0x7F;
+		std::memcpy(&newData[6], sizeSynch, 4);
+
+		uint32_t pos = 10;
+
+		// Extended header
+		if(id3v24->extendedHeader){
+			uint32_t extSize = id3v24->extendedHeader->size;
+			uint8_t extSynch[4];
+			extSynch[0] = (extSize >> 21) & 0x7F;
+			extSynch[1] = (extSize >> 14) & 0x7F;
+			extSynch[2] = (extSize >> 7) & 0x7F;
+			extSynch[3] = extSize & 0x7F;
+			std::memcpy(&newData[pos], extSynch, 4);
+			pos += 4;
+			newData[pos++] = id3v24->extendedHeader->flagBytes;
+			newData[pos++] = id3v24->extendedHeader->flags;
+			if(id3v24->extendedHeader->isUpdate()) newData[pos++] = 0;
+			if(id3v24->extendedHeader->hasCRC()){
+				uint32_t crc = id3v24->extendedHeader->getCRC();
+				uint8_t crcSynch[5];
+				crcSynch[0] = (crc >> 28) & 0x7F;
+				crcSynch[1] = (crc >> 21) & 0x7F;
+				crcSynch[2] = (crc >> 14) & 0x7F;
+				crcSynch[3] = (crc >> 7) & 0x7F;
+				crcSynch[4] = crc & 0x7F;
+				std::memcpy(&newData[pos], crcSynch, 5);
+				pos += 5;
+			}
+			if((id3v24->extendedHeader->flags & 0x10) != 0){
+				newData[pos++] = 0; // restriction length placeholder
+			}
+		}
+
+		// Frames
+		for(auto& f : id3v24->frames){
+			std::memcpy(&newData[pos], f->header.identifier, 4);
+			pos += 4;
+			uint32_t fsize = f->header.getFrameSize();
+			uint8_t fsizeSynch[4];
+			fsizeSynch[0] = (fsize >> 21) & 0x7F;
+			fsizeSynch[1] = (fsize >> 14) & 0x7F;
+			fsizeSynch[2] = (fsize >> 7) & 0x7F;
+			fsizeSynch[3] = fsize & 0x7F;
+			std::memcpy(&newData[pos], fsizeSynch, 4);
+			pos += 4;
+			std::memcpy(&newData[pos], f->header.flags, 2);
+			pos += 2;
+			std::memcpy(&newData[pos], f->data, fsize);
+			pos += fsize;
+		}
+
+		// Footer
+		if(id3v24->header.hasFooter()){
+			std::memcpy(&newData[pos], id3v24->footer->identifier, 3);
+			pos += 3;
+			newData[pos++] = id3v24->footer->major_version;
+			newData[pos++] = id3v24->footer->revision;
+			newData[pos++] = id3v24->footer->flags;
+			std::memcpy(&newData[pos], id3v24->footer->size, 4);
+			pos += 4;
+		}
+
+		// Append original audio data
+		std::memcpy(&newData[totalTagSize], data, size);
+
+		clear();
+		data = newData;
+		size = newSize;
 	}else if(id3v23 != nullptr){
-		//TODO set ID3 v23 tag to 'data'
+		if(hasID3v24() || hasID3v23() || hasID3v20()){
+			uint32_t tagSize = 0;
+			if(hasID3v24()){
+				uint8_t sizeSynch[4];
+				std::memcpy(sizeSynch, &data[6], 4);
+				tagSize = (sizeSynch[0] << 21) | (sizeSynch[1] << 14) | (sizeSynch[2] << 7) | sizeSynch[3];
+				tagSize += 10;
+			}else if(hasID3v23()){
+				uint8_t sizeBytes[4];
+				std::memcpy(sizeBytes, &data[6], 4);
+				tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+				tagSize += 10;
+			}else if(hasID3v20()){
+				uint8_t sizeBytes[4];
+				std::memcpy(sizeBytes, &data[6], 4);
+				tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+				tagSize += 10;
+			}
+			if(tagSize < size){
+				uint64_t newSize = size - tagSize;
+				uint8_t* newData = new uint8_t[newSize];
+				std::memcpy(newData, &data[tagSize], newSize);
+				clear();
+				data = newData;
+				size = newSize;
+			}
+		}
+
+		uint32_t tagDataSize = 0;
+		if(id3v23->extendedHeader) tagDataSize += id3v23->extendedHeader->getSize();
+		for(auto& f : id3v23->frames) tagDataSize += 10 + f->header.getFrameSize();
+
+		uint32_t totalTagSize = 10 + tagDataSize;
+		uint64_t newSize = size + totalTagSize;
+		uint8_t* newData = new uint8_t[newSize];
+
+		// Header (normal size)
+		std::memcpy(&newData[0], id3v23->header.tag, 3);
+		newData[3] = id3v23->header.major_version;
+		newData[4] = id3v23->header.revision_number;
+		newData[5] = id3v23->header.flags;
+		uint8_t sz[4];
+		sz[0] = (tagDataSize >> 24) & 0xFF;
+		sz[1] = (tagDataSize >> 16) & 0xFF;
+		sz[2] = (tagDataSize >> 8) & 0xFF;
+		sz[3] = tagDataSize & 0xFF;
+		std::memcpy(&newData[6], sz, 4);
+
+		uint32_t pos = 10;
+
+		if(id3v23->extendedHeader){
+			uint32_t extSize = id3v23->extendedHeader->size;
+			uint8_t esz[4];
+			esz[0] = (extSize >> 24) & 0xFF;
+			esz[1] = (extSize >> 16) & 0xFF;
+			esz[2] = (extSize >> 8) & 0xFF;
+			esz[3] = extSize & 0xFF;
+			std::memcpy(&newData[pos], esz, 4);
+			pos += 4;
+			std::memcpy(&newData[pos], &id3v23->extendedHeader->flags, 2);
+			pos += 2;
+			std::memcpy(&newData[pos], &id3v23->extendedHeader->padding, 4);
+			pos += 4;
+			if(id3v23->extendedHeader->hasCRC()){
+				std::memcpy(&newData[pos], id3v23->extendedHeader->crc, 4);
+				pos += 4;
+			}
+		}
+
+		for(auto& f : id3v23->frames){
+			std::memcpy(&newData[pos], f->header.identifier, 4);
+			pos += 4;
+			uint32_t fsize = f->header.getFrameSize();
+			uint8_t fs[4];
+			fs[0] = (fsize >> 24) & 0xFF;
+			fs[1] = (fsize >> 16) & 0xFF;
+			fs[2] = (fsize >> 8) & 0xFF;
+			fs[3] = fsize & 0xFF;
+			std::memcpy(&newData[pos], fs, 4);
+			pos += 4;
+			std::memcpy(&newData[pos], f->header.flags, 2);
+			pos += 2;
+			std::memcpy(&newData[pos], f->data, fsize);
+			pos += fsize;
+		}
+
+		std::memcpy(&newData[totalTagSize], data, size);
+		clear();
+		data = newData;
+		size = newSize;
 	}else if(id3v20 != nullptr){
-		//TODO set ID3 v20 tag to 'data'
+		if(hasID3v24() || hasID3v23() || hasID3v20()){
+			uint32_t tagSize = 0;
+			if(hasID3v24()){
+				uint8_t sizeSynch[4];
+				std::memcpy(sizeSynch, &data[6], 4);
+				tagSize = (sizeSynch[0] << 21) | (sizeSynch[1] << 14) | (sizeSynch[2] << 7) | sizeSynch[3];
+				tagSize += 10;
+			}else if(hasID3v23()){
+				uint8_t sizeBytes[4];
+				std::memcpy(sizeBytes, &data[6], 4);
+				tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+				tagSize += 10;
+			}else if(hasID3v20()){
+				uint8_t sizeBytes[4];
+				std::memcpy(sizeBytes, &data[6], 4);
+				tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+				tagSize += 10;
+			}
+			if(tagSize < size){
+				uint64_t newSize = size - tagSize;
+				uint8_t* newData = new uint8_t[newSize];
+				std::memcpy(newData, &data[tagSize], newSize);
+				clear();
+				data = newData;
+				size = newSize;
+			}
+		}
+
+		uint32_t tagDataSize = 0;
+		for(auto& f : id3v20->frames) tagDataSize += 6 + f->header.getFrameSize();
+		uint32_t totalTagSize = 10 + tagDataSize;
+		uint64_t newSize = size + totalTagSize;
+		uint8_t* newData = new uint8_t[newSize];
+
+		std::memcpy(&newData[0], id3v20->header.tag, 3);
+		newData[3] = id3v20->header.major_version;
+		newData[4] = id3v20->header.revision_number;
+		newData[5] = id3v20->header.flags;
+		uint8_t sz[4];
+		sz[0] = (tagDataSize >> 24) & 0xFF;
+		sz[1] = (tagDataSize >> 16) & 0xFF;
+		sz[2] = (tagDataSize >> 8) & 0xFF;
+		sz[3] = tagDataSize & 0xFF;
+		std::memcpy(&newData[6], sz, 4);
+
+		uint32_t pos = 10;
+		for(auto& f : id3v20->frames){
+			std::memcpy(&newData[pos], f->header.identifier, 3);
+			pos += 3;
+			uint32_t fsize = f->header.getFrameSize();
+			newData[pos++] = (fsize >> 16) & 0xFF;
+			newData[pos++] = (fsize >> 8) & 0xFF;
+			newData[pos++] = fsize & 0xFF;
+			std::memcpy(&newData[pos], f->data, fsize);
+			pos += fsize;
+		}
+
+		std::memcpy(&newData[totalTagSize], data, size);
+		clear();
+		data = newData;
+		size = newSize;
 	}else{
-		if(hasID3v20() == true){
-			//TODO remove ID3 v20 from 'data'
+		if(hasID3v20()){
+			// Remove any ID3v20 tag present
+			uint8_t sizeBytes[4];
+			std::memcpy(sizeBytes, &data[6], 4);
+			uint32_t tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+			tagSize += 10;
+			if(tagSize < size){
+				uint64_t newSize = size - tagSize;
+				uint8_t* newData = new uint8_t[newSize];
+				std::memcpy(newData, &data[tagSize], newSize);
+				clear();
+				data = newData;
+				size = newSize;
+			}
 		}
 
-		if(hasID3v23() == true){
-			//TODO remove ID3 v23 from 'data'
+		if(hasID3v23()){
+			// Remove any ID3v23 tag present
+			uint8_t sizeBytes[4];
+			std::memcpy(sizeBytes, &data[6], 4);
+			uint32_t tagSize = (sizeBytes[0] << 24) | (sizeBytes[1] << 16) | (sizeBytes[2] << 8) | sizeBytes[3];
+			tagSize += 10;
+			if(tagSize < size){
+				uint64_t newSize = size - tagSize;
+				uint8_t* newData = new uint8_t[newSize];
+				std::memcpy(newData, &data[tagSize], newSize);
+				clear();
+				data = newData;
+				size = newSize;
+			}
 		}
 
-		if(hasID3v24() == true){
-			//TODO remove ID3 v24 from 'data'
+		if(hasID3v24()){
+			// Remove any ID3v24 tag present
+			uint8_t sizeSynch[4];
+			std::memcpy(sizeSynch, &data[6], 4);
+			uint32_t tagSize = (sizeSynch[0] << 21) | (sizeSynch[1] << 14) | (sizeSynch[2] << 7) | sizeSynch[3];
+			tagSize += 10;
+			if(tagSize < size){
+				uint64_t newSize = size - tagSize;
+				uint8_t* newData = new uint8_t[newSize];
+				std::memcpy(newData, &data[tagSize], newSize);
+				clear();
+				data = newData;
+				size = newSize;
+			}
 		}
 	}
 }

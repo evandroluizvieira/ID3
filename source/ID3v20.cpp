@@ -2,6 +2,18 @@
 
 #include <cstring>
 
+namespace{
+
+/**
+ * @brief ISO-8859-1 text encoding byte as defined in the ID3v2.0 specification.
+ *
+ * All text frames store this byte as the first byte of the frame data to indicate
+ * that the string content is encoded in ISO-8859-1 (Latin-1).
+ */
+static const uint8_t ISO_ENCODING_BYTE = 0x00;
+
+}
+
 ID3v20Header::ID3v20Header() :
 	ID3v2HeaderBase(){
 	major_version = 2;
@@ -64,7 +76,7 @@ ID3v20Frame::~ID3v20Frame(){
 	header = {};
 
 	if(data != nullptr){
-		delete data;
+		delete[] data;
 		data = nullptr;
 	}
 }
@@ -83,28 +95,35 @@ ID3v20::~ID3v20(){
 	header = {};
 }
 
-ID3v20Frame* ID3v20::getFrame(uint8_t identifier[3]) const{
+ID3v20Frame* ID3v20::getFrame(const uint8_t identifier[3]) const{
 	for(auto frame : frames){
-		if(std::memcmp(frame->header.identifier, identifier, 3) == 0){
+		if(frame != nullptr && std::memcmp(frame->header.identifier, identifier, 3) == 0){
 			return frame;
 		}
 	}
 	return nullptr;
 }
 
-void ID3v20::setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data){
+void ID3v20::setFrame(const uint8_t identifier[3], uint32_t size, const uint8_t* data){
 	if(size == 0 || data == nullptr){
 		return;
 	}
 
-	ID3v20Frame* frame = new ID3v20Frame();
-	std::memcpy(frame->header.identifier, identifier, 3);
+	ID3v20Frame* frame = getFrame(identifier);
+
+	if(frame == nullptr){
+		frame = new ID3v20Frame();
+		std::memcpy(frame->header.identifier, identifier, 3);
+		frames.push_back(frame);
+	}else{
+		delete[] frame->data;
+		frame->data = nullptr;
+	}
+
 	frame->header.setFrameSize(size);
 
 	frame->data = new uint8_t[size];
 	std::memcpy(frame->data, data, size);
-
-	frames.push_back(frame);
 }
 
 void ID3v20::removeFrame(ID3v20Frame* frame){
@@ -121,56 +140,87 @@ std::string ID3v20::getTitle() const{
 	uint8_t identifier[3] = {'T', 'T', '2'};
 	ID3v20Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v20::setTitle(const std::string& title){
 	uint8_t identifier[3] = {'T', 'T', '2'};
-	setFrame(identifier, title.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str())));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += title;
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
 std::string ID3v20::getArtist() const{
 	uint8_t identifier[3] = {'T', 'P', '1'};
 	ID3v20Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v20::setArtist(const std::string& artist){
 	uint8_t identifier[3] = {'T', 'P', '1'};
-	setFrame(identifier, artist.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(artist.c_str())));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += artist;
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
 std::string ID3v20::getAlbum() const{
 	uint8_t identifier[3] = {'T', 'A', 'L'};
 	ID3v20Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v20::setAlbum(const std::string& album){
 	uint8_t identifier[3] = {'T', 'A', 'L'};
-	setFrame(identifier, album.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(album.c_str())));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += album;
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
 std::string ID3v20::getYear() const{
 	uint8_t identifier[3] = {'T', 'Y', 'E'};
 	ID3v20Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v20::setYear(const std::string& year){
 	uint8_t identifier[3] = {'T', 'Y', 'E'};
-	setFrame(identifier, year.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(year.c_str())));
+	if(year.length() != 4){
+		return;
+	}
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += year;
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
 std::string ID3v20::getComment() const{
@@ -178,21 +228,24 @@ std::string ID3v20::getComment() const{
 	ID3v20Frame* frame = getFrame(identifier);
 
 	if(frame != nullptr){
-		std::string frameData(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
-
-		std::string language = "eng";
-
-		size_t languagePosition = frameData.find(language);
-		if(languagePosition == std::string::npos){
+		const uint32_t frameSize = frame->header.getFrameSize();
+		// Minimum: encoding(1) + language(3) + description null terminator(1) = 5 bytes
+		if(frameSize < 5){
 			return "";
 		}
 
-		size_t commentPos = frameData.find('\0', languagePosition + language.size() + 1);
-		if (commentPos == std::string::npos) {
+		const char* rawData = reinterpret_cast<const char*>(frame->data);
+		// Skip encoding byte (rawData[0]) and language bytes (rawData[1..3]).
+		// Walk from rawData[4] to find the null terminator of the short content description.
+		size_t descriptionEnd = 4;
+		while(descriptionEnd < frameSize && rawData[descriptionEnd] != '\0'){
+			++descriptionEnd;
+		}
+		if(descriptionEnd >= frameSize){
 			return "";
 		}
 
-		return frameData.substr(commentPos + 1);
+		return std::string(rawData + descriptionEnd + 1, frameSize - descriptionEnd - 1);
 	}
 
 	return "";
@@ -201,11 +254,10 @@ std::string ID3v20::getComment() const{
 void ID3v20::setComment(const std::string& comment){
 	uint8_t identifier[3] = {'C', 'O', 'M'};
 
-	std::string language = "eng";
-
 	std::string frameData;
-	frameData += language;
-	frameData += '\0'; // Null separator
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += "eng"; // language
+	frameData += '\0'; // empty short content description
 	frameData += comment;
 
 	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
@@ -216,14 +268,23 @@ uint8_t ID3v20::getTrack() const{
 	ID3v20Frame* frame = getFrame(identifier);
 
 	if(frame != nullptr){
-		std::string trackString(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return 0;
+		}
+		std::string trackString(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 		size_t slashPosition = trackString.find('/');
 		if(slashPosition != std::string::npos){
 			trackString = trackString.substr(0, slashPosition);
 		}
 		try{
-			return std::stoul(trackString);
-		}catch(...){}
+			unsigned long track = std::stoul(trackString);
+			if(track <= UINT8_MAX){
+				return static_cast<uint8_t>(track);
+			}
+		}catch(...){
+
+		}
 	}
 
 	return 0;
@@ -231,8 +292,10 @@ uint8_t ID3v20::getTrack() const{
 
 void ID3v20::setTrack(uint8_t track){
 	uint8_t identifier[3] = {'T', 'R', 'K'};
-	std::string trackString = std::to_string(track);
-	setFrame(identifier, trackString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(trackString.c_str())));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += std::to_string(track);
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }
 
 ID3v10::Genre ID3v20::getGenre() const{
@@ -240,14 +303,25 @@ ID3v10::Genre ID3v20::getGenre() const{
 	ID3v20Frame* frame = getFrame(identifier);
 
 	if(frame != nullptr){
-		std::string genreString(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return ID3v10::Genre::Other;
+		}
+		std::string genreString(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
+		if(genreString.empty()){
+			return ID3v10::Genre::Other;
+		}
 		if(genreString.front() == '(' && genreString.back() == ')'){
 			genreString = genreString.substr(1, genreString.size() - 2);
 		}
+		try{
+			int genreValue = std::stoi(genreString);
 
-		int genreValue = std::stoi(genreString);
-		if(genreValue >= 0 && genreValue <= ID3v10::HardRock){
-			return static_cast<ID3v10::Genre>(genreValue);
+			if(genreValue >= 0 && genreValue <= ID3v10::HardRock){
+				return static_cast<ID3v10::Genre>(genreValue);
+			}
+		}catch(...){
+
 		}
 	}
 
@@ -257,6 +331,8 @@ ID3v10::Genre ID3v20::getGenre() const{
 void ID3v20::setGenre(ID3v10::Genre genre){
 	uint8_t identifier[3] = {'T', 'C', 'O'};
 
-	std::string genreString = "(" + std::to_string(static_cast<int>(genre)) + ")";
-	setFrame(identifier, genreString.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(genreString.c_str())));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += '(' + std::to_string(static_cast<int>(genre)) + ')';
+	setFrame(identifier, frameData.size(), reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str())));
 }

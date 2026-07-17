@@ -2,6 +2,18 @@
 
 #include <cstring>
 
+namespace{
+
+/**
+ * @brief ISO-8859-1 text encoding byte as defined in the ID3v2.3 specification.
+ *
+ * All text frames store this byte as the first byte of the frame data to indicate
+ * that the string content is encoded in ISO-8859-1 (Latin-1).
+ */
+static const uint8_t ISO_ENCODING_BYTE = 0x00;
+
+}
+
 ID3v23Header::ID3v23Header() :
 	ID3v2HeaderBase(){
     major_version = 3;
@@ -80,46 +92,46 @@ void ID3v23FrameHeader::setFrameSize(uint32_t size){
 
 void ID3v23FrameHeader::setEncrypted(bool encrypted){
     if(encrypted)
-        flags[0] |= 0x01;
+        flags[1] |= 0x40;
     else
-        flags[0] &= ~0x01;
+        flags[1] &= ~0x40;
 }
 
 bool ID3v23FrameHeader::isEncrypted() const{
-    return (flags[0] & 0x01) != 0;
+    return (flags[1] & 0x40) != 0;
 }
 
 void ID3v23FrameHeader::setCompressed(bool compressed){
     if(compressed)
-        flags[0] |= 0x08;
-    else
-        flags[0] &= ~0x08;
-}
-
-bool ID3v23FrameHeader::isCompressed() const{
-    return (flags[0] & 0x08) != 0;
-}
-
-void ID3v23FrameHeader::setReadOnly(bool readOnly){
-    if(readOnly)
-        flags[0] |= 0x80;
-    else
-        flags[0] &= ~0x80;
-}
-
-bool ID3v23FrameHeader::isReadOnly() const{
-    return (flags[0] & 0x80) != 0;
-}
-
-void ID3v23FrameHeader::setGroupingIdentity(bool group){
-    if(group)
         flags[1] |= 0x80;
     else
         flags[1] &= ~0x80;
 }
 
-bool ID3v23FrameHeader::isGroupingIdentity() const{
+bool ID3v23FrameHeader::isCompressed() const{
     return (flags[1] & 0x80) != 0;
+}
+
+void ID3v23FrameHeader::setReadOnly(bool readOnly){
+    if(readOnly)
+        flags[0] |= 0x20;
+    else
+        flags[0] &= ~0x20;
+}
+
+bool ID3v23FrameHeader::isReadOnly() const{
+    return (flags[0] & 0x20) != 0;
+}
+
+void ID3v23FrameHeader::setGroupingIdentity(bool group){
+    if(group)
+        flags[1] |= 0x20;
+    else
+        flags[1] &= ~0x20;
+}
+
+bool ID3v23FrameHeader::isGroupingIdentity() const{
+    return (flags[1] & 0x20) != 0;
 }
 
 ID3v23Frame::ID3v23Frame() :
@@ -151,7 +163,7 @@ ID3v23::~ID3v23(){
 	}
 }
 
-ID3v23Frame* ID3v23::getFrame(uint8_t identifier[4]) const{
+ID3v23Frame* ID3v23::getFrame(const uint8_t identifier[4]) const{
 	for(auto frame : frames){
 		if(std::memcmp(frame->header.identifier, identifier, 4) == 0){
 			return frame;
@@ -160,7 +172,7 @@ ID3v23Frame* ID3v23::getFrame(uint8_t identifier[4]) const{
 	return nullptr;
 }
 
-bool ID3v23::setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data){
+bool ID3v23::setFrame(const uint8_t identifier[4], uint32_t size, const uint8_t* data){
 	if(size == 0 || data == nullptr){
 		return false;
 	}
@@ -177,7 +189,7 @@ bool ID3v23::setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data){
 	return false;
 }
 
-void ID3v23::addFrame(uint8_t identifier[4], uint32_t size, uint8_t* data){
+void ID3v23::addFrame(const uint8_t identifier[4], uint32_t size, const uint8_t* data){
 	if(size == 0 || data == nullptr){
 		return;
 	}
@@ -203,15 +215,22 @@ std::string ID3v23::getTitle() const{
 	uint8_t identifier[4] = {'T', 'I', 'T', '2'};
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v23::setTitle(const std::string& title){
 	uint8_t identifier[4] = {'T', 'I', 'T', '2'};
-	uint32_t size = title.size();
-	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str()));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += title;
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		delete[] frame->data;
@@ -227,15 +246,22 @@ std::string ID3v23::getArtist() const{
 	uint8_t identifier[4] = {'T', 'P', 'E', '1'};
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
-void ID3v23::setArtist(const std::string& title){
+void ID3v23::setArtist(const std::string& artist){
 	uint8_t identifier[4] = {'T', 'P', 'E', '1'};
-	uint32_t size = title.size();
-	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str()));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += artist;
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		delete[] frame->data;
@@ -251,15 +277,22 @@ std::string ID3v23::getAlbum() const{
 	uint8_t identifier[4] = {'T', 'A', 'L', 'B'};
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
-void ID3v23::setAlbum(const std::string& title){
+void ID3v23::setAlbum(const std::string& album){
 	uint8_t identifier[4] = {'T', 'A', 'L', 'B'};
-	uint32_t size = title.size();
-	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(title.c_str()));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += album;
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		delete[] frame->data;
@@ -275,25 +308,33 @@ std::string ID3v23::getYear() const{
 	uint8_t identifier[4] = {'T', 'Y', 'E', 'R'};
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v23::setYear(const std::string& year){
-	if(year.size() == 4){
-		uint8_t identifier[4] = {'T', 'Y', 'E', 'R'};
-		uint32_t size = year.size();
-		uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(year.c_str()));
-		ID3v23Frame* frame = getFrame(identifier);
-		if(frame != nullptr){
-			delete[] frame->data;
-			frame->data = new uint8_t[size];
-			std::memcpy(frame->data, data, size);
-			frame->header.setFrameSize(size);
-		}else{
-			addFrame(identifier, size, data);
-		}
+	if(year.size() != 4){
+		return;
+	}
+	uint8_t identifier[4] = {'T', 'Y', 'E', 'R'};
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += year;
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
+	ID3v23Frame* frame = getFrame(identifier);
+	if(frame != nullptr){
+		delete[] frame->data;
+		frame->data = new uint8_t[size];
+		std::memcpy(frame->data, data, size);
+		frame->header.setFrameSize(size);
+	}else{
+		addFrame(identifier, size, data);
 	}
 }
 
@@ -304,40 +345,33 @@ std::string ID3v23::getComment() const{
 		return "";
 	}
 
-    uint32_t size = frame->header.getFrameSize();
-    if(size < 5){
+    const uint32_t frameSize = frame->header.getFrameSize();
+    // Minimum: encoding(1) + language(3) + description null terminator(1) = 5 bytes
+    if(frameSize < 5){
 		return "";
 	}
-    
-	uint8_t encodingISO_8859_1 = 0x00;
-	uint8_t encodingUtf8 = 0x03;
 
-	uint8_t encoding = frame->data[0];
-    //std::string language = std::string(reinterpret_cast<const char*>(frame->data + 1), 3);
-
-    const char* descriptionStart = reinterpret_cast<const char*>(frame->data + 4);
-    uint32_t descriptionLength = strnlen(descriptionStart, size - 4);
-    
-	const char* textStart = descriptionStart + descriptionLength + 1;
-    uint32_t textLength = size - (4 + descriptionLength + 1);
-
-    if(encoding == encodingISO_8859_1 || encoding == encodingUtf8){
-        return std::string(textStart, strnlen(textStart, textLength));
+    const char* rawData = reinterpret_cast<const char*>(frame->data);
+    // Skip encoding byte (rawData[0]) and language bytes (rawData[1..3]).
+    // Walk from rawData[4] to find the null terminator of the short content description.
+    size_t descriptionEnd = 4;
+    while(descriptionEnd < frameSize && rawData[descriptionEnd] != '\0'){
+        ++descriptionEnd;
     }
-    
-    return "";
+    if(descriptionEnd >= frameSize){
+        return "";
+    }
+
+    return std::string(rawData + descriptionEnd + 1, frameSize - descriptionEnd - 1);
 }
 
 void ID3v23::setComment(const std::string& comment){
 	uint8_t identifier[4] = {'C', 'O', 'M', 'M'};
-	uint8_t encodingISO_8859_1 = 0x00;
-	//uint8_t encodingUtf8 = 0x03;
-	std::string language = "eng";
 
 	std::string frameData;
-	frameData += static_cast<char>(encodingISO_8859_1);
-	frameData += language;
-	frameData += '\0';
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += "eng"; // language
+	frameData += '\0'; // empty short content description
 	frameData += comment;
 
 	uint32_t size = frameData.size();
@@ -357,16 +391,22 @@ std::string ID3v23::getTrack() const{
 	uint8_t identifier[4] = {'T', 'R', 'C', 'K'};
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v23::setTrack(uint8_t track){
 	uint8_t identifier[4] = {'T', 'R', 'C', 'K'};
-	std::string trackString = std::to_string(track);
-	uint32_t size = trackString.size();
-	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(trackString.c_str()));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += std::to_string(track);
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		delete[] frame->data;
@@ -382,16 +422,22 @@ std::string ID3v23::getGenre() const{
 	uint8_t identifier[4] = {'T', 'C', 'O', 'N'};
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
-		return std::string(reinterpret_cast<char*>(frame->data), frame->header.getFrameSize());
+		const uint32_t frameSize = frame->header.getFrameSize();
+		if(frameSize <= 1){
+			return "";
+		}
+		return std::string(reinterpret_cast<char*>(frame->data + 1), frameSize - 1);
 	}
 	return "";
 }
 
 void ID3v23::setGenre(ID3v10::Genre genre){
 	uint8_t identifier[4] = {'T', 'C', 'O', 'N'};
-	std::string genreString = '(' + std::to_string(genre) + ')';
-	uint32_t size = genreString.size();
-	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(genreString.c_str()));
+	std::string frameData;
+	frameData += static_cast<char>(ISO_ENCODING_BYTE);
+	frameData += '(' + std::to_string(static_cast<int>(genre)) + ')';
+	uint32_t size = frameData.size();
+	uint8_t* data = reinterpret_cast<uint8_t*>(const_cast<char*>(frameData.c_str()));
 	ID3v23Frame* frame = getFrame(identifier);
 	if(frame != nullptr){
 		delete[] frame->data;

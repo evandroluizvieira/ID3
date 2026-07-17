@@ -2,31 +2,60 @@
 
 #include <cstring>
 
-static const uint16_t BITRATE_TABLE[4][3][16] = {
-	{
-		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
+namespace{
+
+/**
+ * @brief Bitrate lookup table in kbps indexed by [MPEGVersion][layerIndex][bitrateIndex].
+ *
+ * First dimension uses MP3FrameHeader::MPEGVersion values (MPEG25=0, Reserved=1, MPEG2=2, MPEG1=3).
+ * Second dimension uses layer index (0=LayerI, 1=LayerII, 2=LayerIII).
+ * Third dimension uses the 4-bit bitrate index from the frame header (0-15).
+ *
+ * A value of 0 indicates free format or a bad/reserved index.
+ *
+ * @note Based on the MPEG audio specification bitrate table (V1=MPEG1, V2=MPEG2 and MPEG2.5).
+ */
+static const uint16_t BIT_RATE_TABLE[4][3][16] = {
+	{ // MPEG 2.5 — same bitrates as MPEG 2
+		{0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, 0}, // L1  = V2,L1
+		{0,  8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160, 0}, // L2  = V2,L2&L3
+		{0,  8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160, 0}  // L3  = V2,L2&L3
 	},
-	{
+	{ // Reserved — all zeroes
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	},
-	{
-		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
+	{ // MPEG 2
+		{0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, 0}, // L1  = V2,L1
+		{0,  8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160, 0}, // L2  = V2,L2&L3
+		{0,  8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160, 0}  // L3  = V2,L2&L3
 	},
-	{
-		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
-		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0},
-		{0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0}
+	{ // MPEG 1
+		{0,  32,  64,  96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 0}, // L1 = V1,L1
+		{0,  32,  48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, 0}, // L2 = V1,L2
+		{0,  32,  40,  48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 0}  // L3 = V1,L3
 	}
 };
 
+/**
+ * @brief Sample rate lookup table in Hz indexed by [MPEGVersion][sampleRateIndex].
+ *
+ * First dimension uses MP3FrameHeader::MPEGVersion values (MPEG25=0, Reserved=1, MPEG2=2, MPEG1=3).
+ * Second dimension uses the 2-bit sample rate index from the frame header (0-3).
+ *
+ * A value of 0 indicates a reserved or invalid index.
+ *
+ * @note Based on the MPEG audio specification sample rate table.
+ */
 static const uint32_t SAMPLE_RATE_TABLE[4][4] = {
-	{11025, 12000, 8000, 0},
-	{0, 0, 0, 0},
-	{22050, 24000, 16000, 0},
-	{44100, 48000, 32000, 0}
+	{11025, 12000,  8000, 0}, // MPEG 2.5
+	{    0,     0,     0, 0}, // Reserved
+	{22050, 24000, 16000, 0}, // MPEG 2
+	{44100, 48000, 32000, 0}  // MPEG 1
 };
+
+}
 
 MP3FrameHeader::MP3FrameHeader() {
 	std::memset(&data, 0, sizeof(MP3FrameHeaderData));
@@ -50,7 +79,7 @@ MP3FrameHeader::MPEGVersion MP3FrameHeader::getMPEGVersion() const {
 }
 
 void MP3FrameHeader::setMPEGVersion(MPEGVersion version) {
-	data.data[1] = (data.data[1] & 0xF7) | ((version & 0x03) << 3);
+	data.data[1] = (data.data[1] & 0xE7) | ((version & 0x03) << 3);
 }
 
 MP3FrameHeader::Layer MP3FrameHeader::getLayer() const {
@@ -94,9 +123,9 @@ uint16_t MP3FrameHeader::getBitrate() const {
 
 	// Layer is stored as: 0=Reserved, 1=LayerIII, 2=LayerII, 3=LayerI
 	// Table is indexed as: 0=LayerI, 1=LayerII, 2=LayerIII
-	uint8_t layerIdx = (layer == LayerI) ? 0 : (layer == LayerII) ? 1 : 2;
+	uint8_t layerIndex = (layer == LayerI) ? 0 : (layer == LayerII) ? 1 : 2;
 
-	return BITRATE_TABLE[version][layerIdx][index];
+	return BIT_RATE_TABLE[version][layerIndex][index];
 }
 
 MP3FrameHeader::SampleRate MP3FrameHeader::getSampleRateIndex() const {
@@ -110,13 +139,13 @@ void MP3FrameHeader::setSampleRateIndex(SampleRate rate) {
 
 uint32_t MP3FrameHeader::getSampleRate() const {
 	MPEGVersion version = getMPEGVersion();
-	SampleRate rateIdx = getSampleRateIndex();
+	SampleRate sampleRateIndex = getSampleRateIndex();
 
-	if (version == Reserved || rateIdx == SR_Reserved) {
+	if (version == Reserved || sampleRateIndex == SR_Reserved) {
 		return 0;
 	}
 
-	return SAMPLE_RATE_TABLE[version][rateIdx];
+	return SAMPLE_RATE_TABLE[version][sampleRateIndex];
 }
 
 bool MP3FrameHeader::hasPadding() const {

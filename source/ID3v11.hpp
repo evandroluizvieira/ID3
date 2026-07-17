@@ -24,7 +24,7 @@ struct ID3v11Data{
 	 * @var uint8_t ID3v11Data::identification[3]
 	 *
 	 * @brief Array holding 3-byte text identification for the tag.
-	*/
+	 */
 	uint8_t identification[3];
 
 	/**
@@ -58,7 +58,9 @@ struct ID3v11Data{
 	/**
 	 * @var uint8_t ID3v11Data::comment[29]
 	 *
-	 * @brief Array holding 29-byte comment text information of the tag.
+	 * @brief Array holding the comment field. Bytes 0..27 store the comment text
+	 *        (up to 28 characters). Byte 28 is always zero as required by the
+	 *        ID3v1.1 specification to distinguish v1.1 from v1.0.
 	 */
 	uint8_t comment[29];
 
@@ -76,6 +78,8 @@ struct ID3v11Data{
 	 */
 	uint8_t genre[1];
 };
+
+static_assert(sizeof(ID3v11Data) == 128, "ID3v11Data must be exactly 128 bytes.");
 
 /**
  * @class ID3v11
@@ -155,19 +159,19 @@ class ID3v11{
 		/**
 		 * @brief Get the comment from 'ID3v11::data.comment' as std::string.
 		 *
-		 * @return Copy of the comment (up to 29 characters).
+		 * @return Copy of the comment (up to 28 characters).
 		 */
 		std::string getComment() const;
 
 		/**
 		 * @brief Set a new comment in 'ID3v11::data.comment'.
 		 *
-		 * @param comment New comment to set (up to 29 characters).
+		 * @param comment New comment to set (up to 28 characters).
 		 */
 		void setComment(const std::string& comment);
 
 		/**
-		 * @brief Get the track number from 'ID3v11::data.track' as unsigned int.
+		 * @brief Get the track number from 'ID3v11::data.track' as uint8_t.
 		 *
 		 * @return Track number.
 		 */

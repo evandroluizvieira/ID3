@@ -71,10 +71,10 @@ class ID3v23ExtendedHeader{
 		 */
 		uint32_t getCRC() const;
 
-	    /**
-	     * @brief Remove the CRC-32 data, clearing the CRC flag and deallocates the memory for CRC, if it exists.
-	     */
-	    void removeCRC();
+		/**
+		 * @brief Remove the CRC-32 data, clearing the CRC flag and deallocates the memory for CRC, if it exists.
+		 */
+		void removeCRC();
 
 		/**
 		 * @brief Get the total size of the extended header.
@@ -148,7 +148,7 @@ public:
     virtual void setFrameSize(uint32_t size) override;
 
     /**
-     * @brief Set the encryption flag (bit 0 of flags[0]).
+     * @brief Set the encryption flag (bit 6 of flags[1]).
      *
      * @param encrypted Whether to set or clear the flag.
      */
@@ -162,7 +162,7 @@ public:
     virtual bool isEncrypted() const override;
 
     /**
-     * @brief Set the compression flag (bit 3 of flags[0]).
+     * @brief Set the compression flag (bit 7 of flags[1]).
      *
      * @param compressed Whether to set or clear the flag.
      */
@@ -176,7 +176,7 @@ public:
     virtual bool isCompressed() const override;
 
     /**
-     * @brief Set the read‑only flag (bit 7 of flags[0]).
+     * @brief Set the read‑only flag (bit 5 of flags[0]).
      *
      * @param readOnly Whether to set or clear the flag.
      */
@@ -190,7 +190,7 @@ public:
     virtual bool isReadOnly() const override;
 
     /**
-     * @brief Set the grouping identity flag (bit 7 of flags[1]).
+     * @brief Set the grouping identity flag (bit 5 of flags[1]).
      *
      * @param group Whether to set or clear the flag.
      */
@@ -261,7 +261,7 @@ class ID3v23{
 		 *
 		 * @return A pointer to the first ID3v23Frame if found, otherwise nullptr.
 		 */
-		ID3v23Frame* getFrame(uint8_t identifier[4]) const;
+		ID3v23Frame* getFrame(const uint8_t identifier[4]) const;
 
 		/**
 		 * @brief Updates the first occurrence of a frame with the given identifier, if present.
@@ -273,7 +273,7 @@ class ID3v23{
 		 * @param data Pointer to the data to be copied into the frame.
 		 * @return true if a frame was found and updated, false otherwise.
 		 */
-		bool setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+		bool setFrame(const uint8_t identifier[4], uint32_t size, const uint8_t* data);
 
 		/**
 		 * @brief Adds a new frame with the given identifier and data, regardless of existing frames.
@@ -284,7 +284,7 @@ class ID3v23{
 		 * @param size The size of the data to be set in the frame, in bytes.
 		 * @param data Pointer to the data to be copied into the frame.
 		 */
-		void addFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+		void addFrame(const uint8_t identifier[4], uint32_t size, const uint8_t* data);
 
 		/**
 		 * @brief Removes a specified frame from the tag.
@@ -303,7 +303,7 @@ class ID3v23{
 		/**
 		 * @brief Sets the title in the tag.
 		 *
-		 * @param title The title to set.
+		 * @param title The new title to be set.
 		 */
 		void setTitle(const std::string& title);
 
@@ -343,10 +343,10 @@ class ID3v23{
 		virtual std::string getYear() const;
 
 		/**
-		* @brief Sets the year in the tag.
-		*
-		* @param year The new year to be set (fixed 4 characters).
-		*/
+		 * @brief Sets the year in the tag.
+		 *
+		 * @param year The new year to be set (fixed 4 characters).
+		 */
 		virtual void setYear(const std::string& year);
 
 		/**
@@ -366,7 +366,7 @@ class ID3v23{
 		/**
 		 * @brief Retrieves the track number from the tag.
 		 *
-		 * @return The track number if found, otherwise 0.
+		 * @return The track string (e.g. "4" or "4/9") if found, otherwise an empty string.
 		 */
 		std::string getTrack() const;
 
@@ -380,12 +380,12 @@ class ID3v23{
 		/**
 		 * @brief Retrieves the genre from the tag.
 		 *
-		 * @return The genre as ID3v10::Genre enum if found, otherwise ID3v10::Genre::Other.
+		 * @return The genre as string enum if found, otherwise ID3v10::Genre::Other.
 		 */
 		std::string getGenre() const;
 
 		/**
-		 * @brief Sets the genre in the ID3v2.0 tag.
+		 * @brief Sets the genre in the ID3v2.3 tag.
 		 *
 		 * @param genre The new genre to be set as ID3v10::Genre enum.
 		 */
@@ -399,13 +399,13 @@ class ID3v23{
 		 */
 		ID3v23Header header;
 
-	    /**
-	     * @var ID3v23ExtendedHeader* ID3v23::extendedHeader
-	     *
-	     * @brief Pointer to the extended header, if present. This can be null if the tag does not have an extended header.
-	     *
-	     * @note The extended header is dynamically allocated and managed.
-	     */
+		/**
+		 * @var ID3v23ExtendedHeader* ID3v23::extendedHeader
+		 *
+		 * @brief Pointer to the extended header, if present. This can be null if the tag does not have an extended header.
+		 *
+		 * @note The extended header is dynamically allocated and managed.
+		 */
 		ID3v23ExtendedHeader* extendedHeader;
 
 		/**

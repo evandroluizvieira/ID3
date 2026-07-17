@@ -399,7 +399,7 @@ public:
      *
      * @return A pointer to the first ID3v24Frame if found, otherwise nullptr.
      */
-    ID3v24Frame* getFrame(uint8_t identifier[4]) const;
+    ID3v24Frame* getFrame(const uint8_t identifier[4]) const;
 
     /**
      * @brief Updates the first occurrence of a frame with the given identifier, if present.
@@ -411,7 +411,7 @@ public:
      * @param data Pointer to the data to be copied into the frame.
      * @return true if a frame was found and updated, false otherwise.
      */
-    bool setFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+    bool setFrame(const uint8_t identifier[4], uint32_t size, const uint8_t* data);
 
     /**
      * @brief Adds a new frame with the given identifier and data, regardless of existing frames.
@@ -422,7 +422,7 @@ public:
      * @param size The size of the data to be set in the frame, in bytes.
      * @param data Pointer to the data to be copied into the frame.
      */
-    void addFrame(uint8_t identifier[4], uint32_t size, uint8_t* data);
+    void addFrame(const uint8_t identifier[4], uint32_t size, const uint8_t* data);
 
     /**
      * @brief Removes a specified frame from the tag.
@@ -441,7 +441,7 @@ public:
     /**
      * @brief Sets the title in the tag.
      *
-     * @param title The title to set.
+     * @param title The new title to be set.
      */
     void setTitle(const std::string& title);
 

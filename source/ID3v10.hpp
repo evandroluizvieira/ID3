@@ -68,6 +68,8 @@ struct ID3v10Data{
 	uint8_t genre[1];
 };
 
+static_assert(sizeof(ID3v10Data) == 128, "ID3v10Data must be exactly 128 bytes.");
+
 /**
  * @class ID3v10
  *
@@ -259,7 +261,7 @@ class ID3v10{
 		 */
 		void setGenre(ID3v10::Genre genre);
 
-    private:
+	private:
 		/**
 		 * @var ID3v10Data ID3v10::data
 		 *
