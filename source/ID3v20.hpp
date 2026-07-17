@@ -156,7 +156,7 @@ class ID3v20{
 		 *
 		 * @return A pointer to the first ID3v20Frame if found, otherwise nullptr.
 		 */
-		ID3v20Frame* getFrame(uint8_t identifier[3]) const;
+		ID3v20Frame* getFrame(const uint8_t identifier[3]) const;
 
 		/**
 		 * @brief Updates an existing frame identified by its identifier with new data, or creates a new frame if none with the same identifier exists.
@@ -165,7 +165,7 @@ class ID3v20{
 		 * @param size The size of the data to be set in the frame, in bytes.
 		 * @param data Pointer to the data to be copied into the frame.
 		 */
-		void setFrame(uint8_t identifier[3], uint32_t size, uint8_t* data);
+		void setFrame(const uint8_t identifier[3], uint32_t size, const uint8_t* data);
 
 		/**
 		 * @brief Removes a specified frame from the tag.

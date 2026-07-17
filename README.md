@@ -28,7 +28,7 @@ The project is organized into several directories:
   - Sources in `source/`, public headers in `include/`
   
 - **`application/`** - Example command-line applications (CMake subproject)
-  - 16 ready-to-use tools for tag manipulation
+  - 19 ready-to-use tools for tag manipulation
   - Links against the shared library (DLL)
   
 - **`test/`** - Test infrastructure (CMake subproject)
@@ -50,7 +50,7 @@ build/
 │   ├── ID3.dll (Windows) / libID3.so (Linux) / libID3.dylib (macOS)
 │   └── libID3.dll.a (import library, Windows only)
 └── binary/     # Example applications and executables
-    └── id3_*.exe (16 command-line tools)
+    └── id3_*.exe (19 command-line tools)
 ```
 
 ## Features
@@ -61,7 +61,7 @@ build/
 - **UTF-8 Support**: Handles file paths with special characters via Windows Unicode APIs
 - **In-Memory Operations**: Efficient binary manipulation without temporary files
 - **MP3 Frame Parsing**: Analyze MP3 frame structure and validate audio data
-- **16 Command-Line Tools**: Ready-to-use applications for all common operations
+- **19 Command-Line Tools**: Ready-to-use applications for all common operations
 
 ## Installation
 To get started, clone the repository:
@@ -99,7 +99,7 @@ cmake --build build
 **Output:**
 - **Static**: `build/library/libID3.a` (all platforms)
 - **Shared**: `build/library/ID3.dll` (Windows), `build/library/libID3.so` (Linux), `build/library/libID3.dylib` (macOS)
-- **Applications**: `build/binary/id3_*.exe` (if BUILD_APPLICATIONS=ON)
+- **Applications**: `build/binary/id3_*.exe` (19 command-line tools if BUILD_APPLICATIONS=ON)
 
 **Build options:**
 ```bash
@@ -129,12 +129,12 @@ target_link_libraries(your_app PRIVATE ID3::static)  # or ID3::shared
 ### Compile Applications
 ```bash
 g++ -std=c++17 -O2 -DNDEBUG \
-    application/id3_scan_id3.cpp \
+    application/id3_scan_music.cpp \
     source/File.cpp source/MP3File.cpp source/MP3.cpp \
     source/MP3Frame.cpp source/MP3FrameHeader.cpp \
     source/ID3.cpp source/ID3v1.cpp source/ID3v10.cpp source/ID3v11.cpp \
     source/ID3v2.cpp source/ID3v20.cpp source/ID3v23.cpp source/ID3v24.cpp \
-    -o id3_scan_id3.exe
+    -o id3_scan_music.exe
 ```
 
 ## Library Usage
@@ -248,7 +248,10 @@ if (mp3.hasID3v11()) {
 ## Applications
 
 ### Core Utilities
-- **id3_scan_id3** - Display ID3 tag versions in directory
+- **id3_scan_music** - Display ID3 tag versions in a music folder
+- **id3_scan_band** - Display ID3 tag versions in a band folder
+- **mp3_scan_music** - Display MP3 structure in a music folder
+- **mp3_scan_band** - Display MP3 structure in a band folder
 - **id3_remove_id3v1** - Remove only ID3v1 tags
 - **id3_remove_id3v2** - Remove only ID3v2 tags  
 - **id3_full_process** - Complete pipeline (scan → remove v1 → remove v2 → scan)
@@ -275,7 +278,7 @@ if (mp3.hasID3v11()) {
 All applications follow the same pattern:
 ```bash
 # Scan directory
-id3_scan_id3.exe "C:\Music\My Album"
+id3_scan_music.exe "C:\Music\My Album"
 
 # Remove ID3v1 tags
 id3_remove_id3v1.exe "C:\Music\My Album"
@@ -312,7 +315,7 @@ ID3/
 │   ├── ID3v1             # ID3v1 union header
 │   ├── ID3v2             # ID3v2 union header
 │   └── ...               # Other class headers
-├── application/      # Command-line tools (16 applications)
+├── application/      # Command-line tools (19 applications)
 ├── test/             # Unit tests (Google Test)
 ├── .vscode/          # VS Code build/debug configurations
 ├── Doxyfile          # Doxygen configuration for documentation

@@ -71,6 +71,6 @@ double MP3Frame::getFrameDurationMs() const {
 		return 0.0;
 	}
 
-	double durationMs = (1152.0 / sampleRate) * 1000.0;
-	return durationMs;
+	uint32_t samplesPerFrame = (header.getLayer() == MP3FrameHeader::LayerI) ? 384 : 1152;
+	return (static_cast<double>(samplesPerFrame) / sampleRate) * 1000.0;
 }

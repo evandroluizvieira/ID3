@@ -1,5 +1,5 @@
-#ifndef EMP3FILE_HPP
-#define EMP3FILE_HPP
+#ifndef MP3FILE_HPP
+#define MP3FILE_HPP
 
 /**
  * @file MP3File.hpp
@@ -82,4 +82,4 @@ class MP3File : public File{
 		void removeTags();
 };
 
-#endif /* EMP3FILE_HPP */
+#endif /* MP3FILE_HPP */
